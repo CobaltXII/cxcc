@@ -266,42 +266,41 @@ struct semantic_analyzer_t {
 			}
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t function_call = expression->function_call;
-			// A function call expression is invalid if there is no symbol
-			// under the function call's function identifier.
-			if (!symbols.exists(function_call.function)) {
-				die("unknown identifier '" + function_call.function + "'", expression);
-				return false;
-			}
-			// A function call expression is invalid if there is a
-			// non-function symbol under the function call's function
-			// identifier.
-			if (!symbols.fetch(function_call.function).is_function) {
-				die("called variable '" + function_call.function + "' is not a function", expression);
-				return false;
-			}
-			// A function call expression is invalid if it's parameter count
-			// is not equal to the parameter count of it's registered symbol.
-			symbol_t function = symbols.fetch(function_call.function);
-			if (function.parameters.size() != function_call.arguments.size()) {
-				die("no matching function call to '" + function_call.function + "'", expression);
-				return false;
-			}
-			// A function call expression is invalid if any of it's parameter
-			// expression types cannot be converted to it's corresponding type
-			// as defined in the function's registered symbol.
-			for (int i = 0; i < function_call.arguments.size(); i++) {
-				type_t parameter_type = expression_type(function_call.arguments[i], symbols);
-				type_t expected_type = function.parameters[i].type;
-				if (!can_convert(parameter_type, expected_type)) {
-					die("cannot convert parameter expression of type '" + prettyprint_type(parameter_type) + "' to '" + prettyprint_type(expected_type) + "'", function_call.arguments[i]);
+			// It is valid to refer to functions that have not been defined.
+			// However, there are many rules that can render an expression
+			// invalid if the function being referred to has been defined.
+			if (symbols.exists(function_call.function)) {
+				// A function call expression is invalid if there is a
+				// non-function symbol under the function call's function
+				// identifier.
+				if (!symbols.fetch(function_call.function).is_function) {
+					die("called variable '" + function_call.function + "' is not a function", expression);
 					return false;
 				}
-			}
-			// A function call expression is invalid if any of it's parameter
-			// expressions are invalid.
-			for (int i = 0; i < function_call.arguments.size(); i++) {
-				if (!validate_expression(function_call.arguments[i], symbols)) {
+				// A function call expression is invalid if it's parameter count
+				// is not equal to the parameter count of it's registered symbol.
+				symbol_t function = symbols.fetch(function_call.function);
+				if (function.parameters.size() != function_call.arguments.size()) {
+					die("no matching function call to '" + function_call.function + "'", expression);
 					return false;
+				}
+				// A function call expression is invalid if any of it's parameter
+				// expression types cannot be converted to it's corresponding type
+				// as defined in the function's registered symbol.
+				for (int i = 0; i < function_call.arguments.size(); i++) {
+					type_t parameter_type = expression_type(function_call.arguments[i], symbols);
+					type_t expected_type = function.parameters[i].type;
+					if (!can_convert(parameter_type, expected_type)) {
+						die("cannot convert parameter expression of type '" + prettyprint_type(parameter_type) + "' to '" + prettyprint_type(expected_type) + "'", function_call.arguments[i]);
+						return false;
+					}
+				}
+				// A function call expression is invalid if any of it's parameter
+				// expressions are invalid.
+				for (int i = 0; i < function_call.arguments.size(); i++) {
+					if (!validate_expression(function_call.arguments[i], symbols)) {
+						return false;
+					}
 				}
 			}
 		} else if (expression->type == et_binary) {
@@ -531,10 +530,6 @@ struct semantic_analyzer_t {
 	// Validate a function.
 	bool validate_function(function_t function, symbol_table_t& global_symbols) {
 		symbol_table_t symbols(&global_symbols);
-		// TEMP: define standard function int putchar(int).
-		global_symbols.add_symbol(symbol_t(
-			{0}, "putchar", {{{0}, ""}}
-		));
 		// Load the function parameters as symbols.
 		for (int i = 0; i < function.parameters.size(); i++) {
 			symbols.add_symbol(symbol_t(
