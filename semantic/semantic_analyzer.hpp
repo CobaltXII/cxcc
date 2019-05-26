@@ -82,6 +82,8 @@ struct semantic_analyzer_t {
 						expanded += '\t';
 					} else if (literal[i] == 'v') {
 						expanded += '\v';
+					} else if (literal[i] == '0') {
+						expanded += '\0';
 					} else if (literal[i] == '\\') {
 						expanded += '\\';
 					} else if (literal[i] == '\'') {
@@ -92,7 +94,6 @@ struct semantic_analyzer_t {
 						die("unknown escape sequence", expression->lineno, expression->colno + i - 2);
 					}
 					escaped = false;
-					// TODO: null character literal
 					// TODO: octal character literal
 					// TODO: hexadecimal character literal
 				} else {
