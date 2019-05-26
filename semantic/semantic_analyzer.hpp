@@ -59,6 +59,13 @@ struct semantic_analyzer_t {
 		die(error, function.lineno, function.colno);
 	}
 
+	// Checks if a character is a hexadecimal digit.
+	bool char_is_hex(char x) {
+		return (x >= 'a' && x <= 'f') ||
+			   (x >= 'A' && x <= 'F') ||
+			   (x >= '0' && x <= '9');
+	}
+
 	// Expands a string or character literal.
 	std::string expand_literal(std::string literal, expression_t* expression) {
 		std::string expanded;
@@ -84,6 +91,18 @@ struct semantic_analyzer_t {
 						expanded += '\v';
 					} else if (literal[i] == '0') {
 						expanded += '\0';
+					} else if (literal[i] == 'x') {
+						// Parse hexadecimal character literal (2 additional characters
+						// expected).
+						if (++i >= literal.size()) {
+							die("\\x used with no following hex digits", expression->lineno, expression->colno + i);
+						}
+						std::string hex;
+						while (i < literal.size() && char_is_hex(literal[i])) {
+							hex += literal[i++];
+						}
+						i--;
+						expanded += std::stoul(hex, nullptr, 16);
 					} else if (literal[i] == '\\') {
 						expanded += '\\';
 					} else if (literal[i] == '\'') {
@@ -94,8 +113,6 @@ struct semantic_analyzer_t {
 						die("unknown escape sequence", expression->lineno, expression->colno + i - 2);
 					}
 					escaped = false;
-					// TODO: octal character literal
-					// TODO: hexadecimal character literal
 				} else {
 					expanded += literal[i];
 				}
