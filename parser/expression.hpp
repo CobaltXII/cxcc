@@ -51,8 +51,10 @@ struct expression_t {
 	long						lineno;
 	long						colno;
 
-	integer_t					integer_literal;
 	string_t					string_literal;
+	long						string_label;
+
+	integer_t					integer_literal;
 	character_t					character_literal;
 	identifier_t				identifier;
 	indexing_expression_t		indexing;

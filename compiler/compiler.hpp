@@ -69,7 +69,7 @@ struct compiler_t {
 		if (expression->type == et_integer_literal) {
 			emit("    movq    $%s, %%rax\n", expression->integer_literal.c_str());
 		} else if (expression->type == et_string_literal) {
-			// TODO
+			emit("    leaq    S%ld(%%rip), %%rax\n", expression->string_label);
 		} else if (expression->type == et_character_literal) {
 			emit("    movq    $%u, %%rax\n", expression->character_literal[0]);
 		} else if (expression->type == et_identifier) {
