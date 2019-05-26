@@ -244,8 +244,6 @@ struct semantic_analyzer_t {
 			}
 			expression->character_literal = expanded_literal;
 		} else if (expression->type == et_string_literal) {
-			// TODO: handle newlines and whitespace in string literals
-			//       appropriately
 			expression->string_literal = expand_literal(expression->string_literal, expression);
 		} else if (expression->type == et_identifier) {
 			// Identifiers are invalid if they are undefined or reserved.

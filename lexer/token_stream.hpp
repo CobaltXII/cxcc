@@ -91,7 +91,9 @@ struct token_stream_t {
 		input.next();
 		while (!input.eof()) {
 			int ch = input.next();
-			if (escaped) {
+			if (ch == '\n') {
+				break;
+			} else if (escaped) {
 				str += ch;
 				escaped = false;
 			} else if (ch == '\\') {
