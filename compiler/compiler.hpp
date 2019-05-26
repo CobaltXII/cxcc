@@ -79,9 +79,16 @@ struct compiler_t {
 			// TODO
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t expr = expression->function_call;
-			for (int i = expr.arguments.size() - 1; i >= 0; i--) {
-				compile_expression(expr.arguments[i], symbols);
-				emit("    pushq   %%rax\n");
+			if (expr.function == "putchar") {
+				// TEMP: don't use cdecl for putchar.
+				compile_expression(expr.arguments[0], symbols);
+				emit("    movq    %%rax, %%rdi\n");
+				emit("    callq   _putchar\n");
+			} else {
+				for (int i = expr.arguments.size() - 1; i >= 0; i--) {
+					compile_expression(expr.arguments[i], symbols);
+					emit("    pushq   %%rax\n");
+				}
 				#ifdef __APPLE__
 				emit("    callq   _%s\n", expr.function.c_str());
 				#else
@@ -89,8 +96,6 @@ struct compiler_t {
 				#endif
 				emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 			}
-			emit("    callq   _%s\n", expr.function.c_str());
-			emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 		} else if (expression->type == et_binary) {
 			binary_expression_t expr = expression->binary;
 			if (expr.binary_operator == bi_addition) {
