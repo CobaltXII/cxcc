@@ -1,0 +1,32 @@
++=			Addition assignment
+-=			Subtraction assignment
+*=			Multiplication assignment
+/=			Division assignment
+%=			Modulo assignment
+<<=			Left shift assignment
+>>=			Right shift assignment
+&=			Binary AND assignment
+|=			Binary OR assignment
+^=			Binary XOR assignment
+~			Binary NOT
+++			Post- and pre-increment
+--			Post- and pre-decrement
+&			Binary AND
+|			Binary OR
+^			Binary XOR
+>=			Greater than or equal to
+<=			Lesser than or equal to
+<<			Left shift
+>>			Right shift
+?:			Ternary operator
+
+break		Break loop statement
+continue	Continue loop statement
+switch		Switch/case statement
+case		Switch/case statement
+default		Switch/case statement
+do			Do/while loop statement
+else		If/else if/else statement
+for			For loop statement
+goto		Goto statement
+sizeof		Sizeof function
