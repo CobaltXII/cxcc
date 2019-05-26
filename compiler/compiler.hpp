@@ -82,6 +82,12 @@ struct compiler_t {
 			for (int i = expr.arguments.size() - 1; i >= 0; i--) {
 				compile_expression(expr.arguments[i], symbols);
 				emit("    pushq   %%rax\n");
+				#ifdef __APPLE__
+				emit("    callq   _%s\n", expr.function.c_str());
+				#else
+				emit("    callq   %s\n", expr.function.c_str());
+				#endif
+				emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 			}
 			emit("    callq   _%s\n", expr.function.c_str());
 			emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
@@ -262,8 +268,14 @@ struct compiler_t {
 
 	// Compile a function.
 	void compile_function(function_t function, symbol_table_t& symbols) {
+		#ifdef __APPLE__
 		emit(".globl _%s\n", function.identifier.c_str());
 		emit("_%s:\n", function.identifier.c_str());
+		#else
+		emit(".globl %s\n", function.identifier.c_str());
+		emit("%s:\n", function.identifier.c_str());
+		#endif
+
 		emit("    pushq   %%rbp\n");
 		emit("    movq    %%rsp, %%rbp\n");
 		emit("    subq    $%ld, %%rsp\n", aligned_offset(function, symbols));
