@@ -85,11 +85,33 @@ struct parser_t {
 		int colno = peek.colno;
 		#define EXPRESSION_DEBUG lineno, colno - peek.text.length() - 1
 		if (peek.type == tk_lit_integer) {
-			return new expression_t(expect(tk_lit_integer).text, "int", EXPRESSION_DEBUG);
+			expression_t* out = new expression_t(expect(tk_lit_integer).text, "int", EXPRESSION_DEBUG);
+			peek = input.peek();
+			if (peek.type == tk_left_bracket) {
+				expect(tk_left_bracket);
+				expression_t* index = parse_expression();
+				expect(tk_right_bracket);
+				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
+			}
+			return out;
 		} else if (peek.type == tk_lit_string) {
-			return new expression_t(expect(tk_lit_string).text, "str", EXPRESSION_DEBUG - 2);
+			expression_t* out = new expression_t(expect(tk_lit_string).text, "str", EXPRESSION_DEBUG - 2);
+			if (peek.type == tk_left_bracket) {
+				expect(tk_left_bracket);
+				expression_t* index = parse_expression();
+				expect(tk_right_bracket);
+				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
+			}
+			return out;
 		} else if (peek.type == tk_lit_character) {
-			return new expression_t(expect(tk_lit_character).text, "chr", EXPRESSION_DEBUG - 2);
+			expression_t* out = new expression_t(expect(tk_lit_character).text, "chr", EXPRESSION_DEBUG - 2);
+			if (peek.type == tk_left_bracket) {
+				expect(tk_left_bracket);
+				expression_t* index = parse_expression();
+				expect(tk_right_bracket);
+				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
+			}
+			return out;
 		} else if (peek.type == tk_identifier) {
 			identifier_t identifier = parse_identifier();
 			peek = input.peek();
@@ -105,14 +127,10 @@ struct parser_t {
 				expect(tk_right_parenthesis);
 				return new expression_t({identifier, parameters}, EXPRESSION_DEBUG);
 			} else if (peek.type == tk_left_bracket) {
-				// TODO: Indexing expressions should be allowed to appear
-				// after parenthesis expressions and string literal
-				// expressions.
-				// Indexing expression.
 				expect(tk_left_bracket);
 				expression_t* index = parse_expression();
 				expect(tk_right_bracket);
-				return new expression_t({identifier, index}, EXPRESSION_DEBUG);
+				return new expression_t((indexing_expression_t){new expression_t(identifier, "id", EXPRESSION_DEBUG), index}, EXPRESSION_DEBUG);
 			} else {
 				return new expression_t(identifier, "id", EXPRESSION_DEBUG);
 			}
@@ -120,6 +138,13 @@ struct parser_t {
 			expect(tk_left_parenthesis);
 			expression_t* subexpression = parse_expression();
 			expect(tk_right_parenthesis);
+			peek = input.peek();
+			if (peek.type == tk_left_bracket) {
+				expect(tk_left_bracket);
+				expression_t* index = parse_expression();
+				expect(tk_right_bracket);
+				return new expression_t((indexing_expression_t){subexpression, index}, EXPRESSION_DEBUG);
+			}
 			return subexpression;
 		} else if (peek.type == tk_asterisk) {
 			expect(tk_asterisk);
