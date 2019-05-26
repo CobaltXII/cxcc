@@ -565,7 +565,7 @@ struct semantic_analyzer_t {
 	}
 
 	// Validate a program.
-	bool validate(program_t program) {
+	bool validate(program_t& program) {
 		symbol_table_t global_symbols;
 		for (int i = 0; i < program.size(); i++) {
 			function_t function = program[i];
@@ -585,6 +585,85 @@ struct semantic_analyzer_t {
 				return false;
 			}
 		}
+		// The program is semantically correct if this line has been reached.
+		// This means that calling expand_ast is completely safe and the
+		// resulting output will also be semantically correct.
+		expand_ast(program);
 		return true;
+	}
+
+	// Expand an abstract syntax tree. This function does the following
+	// expansions:
+	//     - indexing expression expansion
+	void expand_ast(program_t& program) {
+		for (int i = 0; i < program.size(); i++) {
+			expand_ast(program[i]);
+		}
+	}
+	void expand_ast(function_t& function) {
+		for (int i = 0; i < function.body.size(); i++) {
+			expand_ast(function.body[i]);
+		}
+	}
+	void expand_ast(statement_t*& statement) {
+		if (statement->type == st_compound) {
+			compound_statement_t stmt = statement->compound_stmt;
+			for (int i = 0; i < stmt.statements.size(); i++) {
+				expand_ast(stmt.statements[i]);
+			}
+		} else if (statement->type == st_conditional) {
+			expand_ast(statement->conditional_stmt.condition);
+			expand_ast(statement->conditional_stmt.body);
+		} else if (statement->type == st_while) {
+			expand_ast(statement->while_stmt.condition);
+			expand_ast(statement->while_stmt.body);
+		} else if (statement->type == st_return) {
+			expand_ast(statement->return_stmt.value);
+		} else if (statement->type == st_variable_declaration) {
+			variable_declaration_statement_t stmt = statement->variable_declaration_stmt;
+			if (stmt.initializer) {
+				expand_ast(stmt.initializer);
+			}
+		} else if (statement->type == st_expression) {
+			expand_ast(statement->expression_stmt.expression);
+		}
+	}
+	void expand_ast(expression_t*& expression) {
+		if (expression->type == et_indexing) {
+			// Convert an indexing expression to an unary expression that
+			// takes the value of the addition of the index to the array. For
+			// example:
+			//     x[y] -> *(x + y)
+			expand_ast(expression->indexing.array);
+			expand_ast(expression->indexing.index);
+			expression_t* array = expression->indexing.array;
+			expression_t* index = expression->indexing.index;
+			expression = new expression_t(
+				(unary_expression_t){
+					new expression_t(
+						(binary_expression_t){
+							array,
+							index,
+							bi_addition
+						},
+						expression->lineno,
+						expression->colno
+					),
+					un_value_of
+				},
+				expression->lineno,
+				expression->colno
+			);
+		} else if (expression->type == et_function_call) {
+			function_call_expression_t expr = expression->function_call;
+			for (int i = 0; i < expr.arguments.size(); i++) {
+				expand_ast(expr.arguments[i]);
+			}
+		} else if (expression->type == et_binary) {
+			expand_ast(expression->binary.left_operand);
+			expand_ast(expression->binary.right_operand);
+		} else if (expression->type == et_unary) {
+			expand_ast(expression->unary.operand);
+		}
 	}
 };
