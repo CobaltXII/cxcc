@@ -17,10 +17,7 @@ TODO
 |=			Binary OR assignment
 ^=			Binary XOR assignment
 
-()			Function call
 []			Array access
-
-~			Binary NOT
 
 ++			Post- and pre-increment
 --			Post- and pre-decrement
@@ -212,7 +209,6 @@ struct compiler_t {
 				compile_expression(expr.operand, symbols);
 				emit("    negq    %%rax\n");
 			} else if (expr.unary_operator == un_address_of) {
-				// TODO: simplification of *& and &* (for semantic analyzer)
 				emit("    leaq    %ld(%%rbp), %%rax\n", symbols.fetch(expr.operand->identifier).offset);
 			} else if (expr.unary_operator == un_logical_not) {
 				compile_expression(expr.operand, symbols);
