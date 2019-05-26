@@ -75,16 +75,34 @@ struct compiler_t {
 				emit("    movq    %%rax, %%rdi\n");
 				emit("    callq   _putchar\n");
 			} else {
-				for (int i = expr.arguments.size() - 1; i >= 0; i--) {
-					compile_expression(expr.arguments[i], symbols);
-					emit("    pushq   %%rax\n");
+				const char* registers[6] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+				if (expr.arguments.size() <= 6) {
+					for (int i = 0; i < expr.arguments.size(); i++) {
+						compile_expression(expr.arguments[i], symbols);
+						emit("    movq    %%rax, %s\n", registers[i]);
+					}
+					#ifdef __APPLE__
+					emit("    callq   _%s\n", expr.function.c_str());
+					#else
+					emit("    callq   %s\n", expr.function.c_str());
+					#endif
+				} else {
+					for (int i = 0; i < 6; i++) {
+						compile_expression(expr.arguments[0], symbols);
+						expr.arguments.erase(expr.arguments.begin());
+						emit("    movq    %%rax, %s\n", registers[i]);
+					}
+					for (int i = expr.arguments.size() - 1; i >= 0; i--) {
+						compile_expression(expr.arguments[i], symbols);
+						emit("    pushq   %%rax\n");
+					}
+					#ifdef __APPLE__
+					emit("    callq   _%s\n", expr.function.c_str());
+					#else
+					emit("    callq   %s\n", expr.function.c_str());
+					#endif
+					emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 				}
-				#ifdef __APPLE__
-				emit("    callq   _%s\n", expr.function.c_str());
-				#else
-				emit("    callq   %s\n", expr.function.c_str());
-				#endif
-				emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 			}
 		} else if (expression->type == et_binary) {
 			binary_expression_t expr = expression->binary;
@@ -292,12 +310,23 @@ struct compiler_t {
 		emit("    andq    $-16, %%rsp\n");
 
 		symbol_table_t new_symbols(&symbols);
-		for (int i = 0; i < function.parameters.size(); i++) {
+		const char* registers[6] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+		for (int i = 0; i < function.parameters.size() && i < 6; i++) {
+			emit("    movq    %s, %d(%%rbp)\n", registers[i], i * -8 - 8);
 			new_symbols.add_symbol(symbol_t(
 				function.parameters[i].type,
 				function.parameters[i].identifier,
-				i * 8 + 16
+				i * -8 - 8
 			));
+		}
+		if (function.parameters.size() > 6) {
+			for (int i = 6; i < function.parameters.size(); i++) {
+				new_symbols.add_symbol(symbol_t(
+					function.parameters[i].type,
+					function.parameters[i].identifier,
+					(i - 6) * 8 + 16
+				));
+			}
 		}
 		for (int i = 0; i < function.body.size(); i++) {
 			compile_statement(function.body[i], new_symbols);
@@ -416,7 +445,14 @@ struct compiler_t {
 			aligned_offset_statement(function.body[i], new_symbols, lowest_offset);
 		}
 
-		long highest_offset = -lowest_offset;
+		long params_offset;
+		if (function.parameters.size() >= 6) {
+			params_offset = 48;
+		} else {
+			params_offset = function.parameters.size() * 8;
+		}
+
+		long highest_offset = -lowest_offset + params_offset;
 		int remainder = highest_offset % 8;
 		if (!remainder) {
 			return highest_offset;
