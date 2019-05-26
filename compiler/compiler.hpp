@@ -284,6 +284,7 @@ struct compiler_t {
 		emit("    pushq   %%rbp\n");
 		emit("    movq    %%rsp, %%rbp\n");
 		emit("    subq    $%ld, %%rsp\n", aligned_offset(function, symbols));
+		emit("    andq    $-16, %%rsp\n");
 
 		symbol_table_t new_symbols(&symbols);
 		for (int i = 0; i < function.parameters.size(); i++) {
