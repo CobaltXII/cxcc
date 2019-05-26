@@ -20,7 +20,7 @@ enum expression_type_t {
 
 // An indexing expression.
 struct indexing_expression_t {
-	identifier_t array;
+	expression_t* array;
 	expression_t* index;
 };
 
