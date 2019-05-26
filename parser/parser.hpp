@@ -285,6 +285,7 @@ struct parser_t {
 
 	// Parse an assignment term.
 	expression_t* parse_assignment_term() {
+		// TODO: right associative
 		expression_t* node = parse_logical_or_term();
 		while (input.peek().type == tk_bi_assignment) {
 			token_t peek = input.peek();

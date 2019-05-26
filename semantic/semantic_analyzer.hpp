@@ -159,14 +159,7 @@ struct semantic_analyzer_t {
 		} else if (expression->type == et_indexing) {
 			// An indexing expression's return type is the type of the array
 			// expression with one less pointer-depth.
-			type_t array_type;
-			if (symbols.exists(expression->indexing.array)) {
-				array_type = symbols.fetch(expression->indexing.array).type;
-				return expression->return_type = {array_type.pointer_depth - 1};
-			} else {
-				die("unknown identifier '" + expression->indexing.array + "'", expression);
-				return expression->return_type = {0};
-			}
+			return {expression_type(expression->indexing.array, symbols).pointer_depth - 1};
 		} else if (expression->type == et_function_call) {
 			// A function call's type is equivalent to the type of the entry
 			// in the symbol table under the name of the function.
@@ -259,8 +252,7 @@ struct semantic_analyzer_t {
 			indexing_expression_t indexing = expression->indexing;
 			// An indexing expression is invalid if the array is invalid or
 			// the index is invalid.
-			if (!symbols.exists(indexing.array)) {
-				die("unknown identifier '" + indexing.array + "'", expression);
+			if (!validate_expression(indexing.array, symbols)) {
 				return false;
 			} else if (!validate_expression(indexing.index, symbols)) {
 				return false;
