@@ -359,9 +359,13 @@ struct compiler_t {
 				pack_strings(stmt.statements[i]);
 			}
 		} else if (statement->type == st_conditional) {
+			pack_strings(statement->conditional_stmt.condition);
 			pack_strings(statement->conditional_stmt.body);
 		} else if (statement->type == st_while) {
+			pack_strings(statement->while_stmt.condition);
 			pack_strings(statement->while_stmt.body);
+		} else if (statement->type == st_return) {
+			pack_strings(statement->return_stmt.value);
 		} else if (statement->type == st_variable_declaration) {
 			variable_declaration_statement_t stmt = statement->variable_declaration_stmt;
 			if (stmt.initializer) {
