@@ -295,6 +295,7 @@ struct compiler_t {
 
 	// Compile the program.
 	void compile() {
+		pack_strings();
 		symbol_table_t symbols;
 		for (int i = 0; i < program.size(); i++) {
 			function_t function = program[i];
@@ -304,6 +305,66 @@ struct compiler_t {
 				function.parameters
 			));
 			compile_function(function, symbols);
+		}
+	}
+
+	// Pack all the strings in an expression.
+	void pack_strings(expression_t* expression) {
+		if (expression->type == et_string_literal) {
+			long string_label = label++;
+			expression->string_label = string_label;
+			emit("S%ld:\n", string_label);
+			for (int i = 0; i < expression->string_literal.size(); i++) {
+				emit("    .quad   %u\n", expression->string_literal[i]);
+			}
+			emit("    .quad   0\n");
+		} else if (expression->type == et_indexing) {
+			// TODO
+		} else if (expression->type == et_function_call) {
+			function_call_expression_t expr = expression->function_call;
+			for (int i = 0; i < expr.arguments.size(); i++) {
+				pack_strings(expr.arguments[i]);
+			}
+		} else if (expression->type == et_binary) {
+			pack_strings(expression->binary.left_operand);
+			pack_strings(expression->binary.right_operand);
+		} else if (expression->type == et_unary) {
+			pack_strings(expression->unary.operand);
+		}
+	}
+
+	// Pack all the strings in a statement.
+	void pack_strings(statement_t* statement) {
+		if (statement->type == st_compound) {
+			compound_statement_t stmt = statement->compound_stmt;
+			for (int i = 0; i < stmt.statements.size(); i++) {
+				pack_strings(stmt.statements[i]);
+			}
+		} else if (statement->type == st_conditional) {
+			pack_strings(statement->conditional_stmt.body);
+		} else if (statement->type == st_while) {
+			pack_strings(statement->while_stmt.body);
+		} else if (statement->type == st_variable_declaration) {
+			variable_declaration_statement_t stmt = statement->variable_declaration_stmt;
+			if (stmt.initializer) {
+				pack_strings(stmt.initializer);
+			}
+		} else if (statement->type == st_expression) {
+			pack_strings(statement->expression_stmt.expression);
+		}
+	}
+
+	// Pack all the strings in a function.
+	void pack_strings(function_t& function) {
+		for (int i = 0; i < function.body.size(); i++) {
+			pack_strings(function.body[i]);
+		}
+	}
+
+	// Pack all the strings in the program.
+	void pack_strings() {
+		for (int i = 0; i < program.size(); i++) {
+			pack_strings(program[i]);
 		}
 	}
 
