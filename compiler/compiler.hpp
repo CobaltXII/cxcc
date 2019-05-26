@@ -96,11 +96,27 @@ struct compiler_t {
 		} else if (expression->type == et_binary) {
 			binary_expression_t expr = expression->binary;
 			if (expr.binary_operator == bi_addition) {
-				compile_expression(expr.left_operand, symbols);
-				emit("    pushq   %%rax\n");
-				compile_expression(expr.right_operand, symbols);
-				emit("    popq    %%rcx\n");
-				emit("    addq    %%rcx, %%rax\n");
+				if (expr.left_operand->return_type.pointer_depth > 0 ||
+					expr.right_operand->return_type.pointer_depth > 0)
+				{
+					compile_expression(expr.left_operand, symbols);
+					if (expr.left_operand->return_type.pointer_depth == 0) {
+						emit("    salq    $3, %%rax\n");
+					}
+					emit("    pushq   %%rax\n");
+					compile_expression(expr.right_operand, symbols);
+					if (expr.right_operand->return_type.pointer_depth == 0) {
+						emit("    salq    $3, %%rax\n");
+					}
+					emit("    popq    %%rcx\n");
+					emit("    addq    %%rcx, %%rax\n");
+				} else {
+					compile_expression(expr.left_operand, symbols);
+					emit("    pushq   %%rax\n");
+					compile_expression(expr.right_operand, symbols);
+					emit("    popq    %%rcx\n");
+					emit("    addq    %%rcx, %%rax\n");
+				}
 			} else if (expr.binary_operator == bi_subtraction) {
 				compile_expression(expr.right_operand, symbols);
 				emit("    pushq   %%rax\n");

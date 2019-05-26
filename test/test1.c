@@ -1,7 +1,7 @@
 int puts(int* str) {
 	while (*str) {
 		putchar(*str);
-		str = str + 8;
+		str = str + 1;
 	}
 	return 0;
 }
