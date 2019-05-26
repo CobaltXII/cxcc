@@ -523,6 +523,10 @@ struct semantic_analyzer_t {
 	// Validate a function.
 	bool validate_function(function_t function, symbol_table_t& global_symbols) {
 		symbol_table_t symbols(&global_symbols);
+		// TEMP: define standard function int putchar(int).
+		global_symbols.add_symbol(symbol_t(
+			{0}, "putchar", {{{0}, ""}}
+		));
 		// Load the function parameters as symbols.
 		for (int i = 0; i < function.parameters.size(); i++) {
 			symbols.add_symbol(symbol_t(
