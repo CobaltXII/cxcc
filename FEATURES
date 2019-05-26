@@ -1,0 +1,41 @@
+Programs:
+	- explicit function declarations
+	- implicit function definitions
+Statements:
+	- compound statements
+	- conditional statements
+	- while loop statements
+	- return statements
+	- variable declaration statements
+	- expression statements
+Expressions:
+	- integer literals
+	- string literals
+	- character literals
+	- identifiers
+	- indexing expressions
+	- function call expressions
+	- binary expressions
+	- unary expressions
+Binary operators:
+	- addition
+	- subtraction
+	- multiplication
+	- division
+	- modulo
+	- assignment
+	- logical AND
+	- logical OR
+	- equivalence
+	- non-equivalence
+	- relational greater-than
+	- relational lesser-than
+Unary operators:
+	- address-of
+	- value-of
+	- arithmetic negative
+	- arithmetic positive
+	- logical NOT
+Miscellaneous:
+	- colored error messages
+	- caret diagnostic
