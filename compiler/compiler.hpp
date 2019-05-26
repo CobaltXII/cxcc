@@ -329,8 +329,6 @@ struct compiler_t {
 				emit("    .quad   %u\n", (unsigned char)expression->string_literal[i]);
 			}
 			emit("    .quad   0\n");
-		} else if (expression->type == et_indexing) {
-			// TODO
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t expr = expression->function_call;
 			for (int i = 0; i < expr.arguments.size(); i++) {
