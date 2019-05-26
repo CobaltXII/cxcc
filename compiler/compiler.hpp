@@ -321,7 +321,7 @@ struct compiler_t {
 			expression->string_label = string_label;
 			emit("S%ld:\n", string_label);
 			for (int i = 0; i < expression->string_literal.size(); i++) {
-				emit("    .quad   %u\n", expression->string_literal[i]);
+				emit("    .quad   %u\n", (unsigned char)expression->string_literal[i]);
 			}
 			emit("    .quad   0\n");
 		} else if (expression->type == et_indexing) {
