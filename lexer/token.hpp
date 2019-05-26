@@ -17,40 +17,31 @@ enum token_type_t {
 	tk_while,
 	tk_return,
 	// Punctuation.
-	tk_left_parenthesis,		// (
-	tk_right_parenthesis,		// )
-	tk_left_bracket,			// [
-	tk_right_bracket,			// ]
-	tk_left_brace,				// {
-	tk_right_brace,				// }
-	tk_comma,					// ,
-	tk_semicolon,				// ;
+	tk_left_parenthesis,
+	tk_right_parenthesis,
+	tk_left_bracket,
+	tk_right_bracket,
+	tk_left_brace,
+	tk_right_brace,
+	tk_comma,
+	tk_semicolon,
 	// Binary operators.
-	// tk_bi_addition,				// +
-	// tk_bi_subtraction,			// -
-	// tk_bi_multiplication,		// *
-	tk_bi_division,				// /
-	tk_bi_modulo,				// %
-	tk_bi_assignment,			// =
-	tk_bi_logical_and,			// &&
-	tk_bi_logical_or,			// ||
-	tk_bi_relational_equal,		// ==
-	tk_bi_relational_non_equal,	// !=
-	tk_bi_relational_greater_than,	// >
-	tk_bi_relational_lesser_than,	// <
+	tk_bi_division,
+	tk_bi_modulo,
+	tk_bi_assignment,
+	tk_bi_logical_and,
+	tk_bi_logical_or,
+	tk_bi_relational_equal,
+	tk_bi_relational_non_equal,
+	tk_bi_relational_greater_than,
+	tk_bi_relational_lesser_than,
 	// Unary operators.
-	// tk_un_value_of				// *
-	// tk_un_arithmetic_positive	// +
-	// tk_un_arithmetic_negative	// -
-	tk_un_address_of,			// &
-	tk_un_logical_not,			// !
+	tk_un_address_of,
+	tk_un_logical_not,
 	// Ambiguous operators.
-	tk_plus,					// + | Unary arithmetic positive and binary
-								//     addition
-	tk_minus,					// - | Unary arithmetic negative and binary
-								//     subtraction
-	tk_asterisk					// * | Unary value-of and binary
-								//     multiplication
+	tk_plus,
+	tk_minus,
+	tk_asterisk
 };
 
 // All token types as strings.

@@ -1,52 +1,5 @@
 #pragma once
 
-/*
-
-========
-= TODO =
-========
-
-+=			Addition assignment
--=			Subtraction assignment
-*=			Multiplication assignment
-/=			Division assignment
-%=			Modulo assignment
-<<=			Left shift assignment
->>=			Right shift assignment
-&=			Binary AND assignment
-|=			Binary OR assignment
-^=			Binary XOR assignment
-
-[]			Array access
-
-++			Post- and pre-increment
---			Post- and pre-decrement
-
-&			Binary AND
-|			Binary OR
-^			Binary XOR
-
->=			Greater than or equal to
-<=			Lesser than or equal to
-
-<<			Left shift
->>			Right shift
-
-?:			Ternary operator
-
-break
-case
-continue
-default
-do
-else
-for
-goto
-sizeof
-switch
-
-*/
-
 // A compiler.
 struct compiler_t {
 	// Default constructor.
