@@ -39,15 +39,11 @@ case
 continue
 default
 do
-double
 else
-enum
 for
 goto
 sizeof
-struct
 switch
-typedef
 
 */
 
@@ -71,9 +67,6 @@ struct compiler_t {
 			emit("    movq    $%u, %%rax\n", expression->character_literal[0]);
 		} else if (expression->type == et_identifier) {
 			emit("    movq    %ld(%%rbp), %%rax\n", symbols.fetch(expression->identifier).offset);
-		} else if (expression->type == et_indexing) {
-			indexing_expression_t expr = expression->indexing;
-			// TODO
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t expr = expression->function_call;
 			if (expr.function == "putchar") {
