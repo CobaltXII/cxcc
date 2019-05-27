@@ -529,7 +529,7 @@ struct semantic_analyzer_t {
 	}
 
 	// Validate a function.
-	bool validate_function(function_t function, symbol_table_t& global_symbols) {
+	bool validate_function(function_t& function, symbol_table_t& global_symbols) {
 		symbol_table_t symbols(&global_symbols);
 		// Load the function parameters as symbols.
 		for (int i = 0; i < function.parameters.size(); i++) {
