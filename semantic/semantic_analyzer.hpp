@@ -92,8 +92,7 @@ struct semantic_analyzer_t {
 					} else if (literal[i] == '0') {
 						expanded += '\0';
 					} else if (literal[i] == 'x') {
-						// Parse hexadecimal character literal (2 additional characters
-						// expected).
+						// Parse hexadecimal character literal.
 						if (++i >= literal.size()) {
 							die("\\x used with no following hex digits", expression->lineno, expression->colno + i);
 						}
