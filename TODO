@@ -29,4 +29,3 @@ do			Do/while loop statement
 else		If/else if/else statement
 for			For loop statement
 goto		Goto statement
-sizeof		Sizeof function

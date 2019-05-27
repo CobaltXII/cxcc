@@ -122,7 +122,8 @@ struct semantic_analyzer_t {
 
 	// Checks if an identifier is reserved.
 	bool is_reserved(identifier_t identifier) {
-		return identifier == "__return__";
+		return identifier == "__return__" ||
+			   identifier == "sizeof";
 	}
 
 	// Check if an expression is an rvalue.
@@ -563,6 +564,10 @@ struct semantic_analyzer_t {
 	// Validate a program.
 	bool validate(program_t& program) {
 		symbol_table_t global_symbols;
+		// Add the predefined function sizeof.
+		global_symbols.add_symbol(symbol_t(
+			{0}, "sizeof", {{{0}, ""}}
+		));
 		for (int i = 0; i < program.size(); i++) {
 			function_t function = program[i];
 			// The function is invalid if a function already exists under the

@@ -22,33 +22,42 @@ struct compiler_t {
 			emit("    movq    %ld(%%rbp), %%rax\n", symbols.fetch(expression->identifier).offset);
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t expr = expression->function_call;
-			const char* registers[6] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
-			if (expr.arguments.size() <= 6) {
-				for (int i = 0; i < expr.arguments.size(); i++) {
-					compile_expression(expr.arguments[i], symbols);
-					emit("    movq    %%rax, %s\n", registers[i]);
+			if (expr.function == "sizeof") {
+				compile_expression(expr.arguments[0], symbols);
+				if (expr.arguments[0]->type == et_string_literal) {
+					emit("    movq    $%lu, %%rax\n", expr.arguments[0]->string_literal.size() * 8 + 8);
+				} else {
+					emit("    movq    $8, %%rax\n");
 				}
-				#ifdef __APPLE__
-				emit("    callq   _%s\n", expr.function.c_str());
-				#else
-				emit("    callq   %s\n", expr.function.c_str());
-				#endif
 			} else {
-				for (int i = 0; i < 6; i++) {
-					compile_expression(expr.arguments[0], symbols);
-					expr.arguments.erase(expr.arguments.begin());
-					emit("    movq    %%rax, %s\n", registers[i]);
+				const char* registers[6] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+				if (expr.arguments.size() <= 6) {
+					for (int i = 0; i < expr.arguments.size(); i++) {
+						compile_expression(expr.arguments[i], symbols);
+						emit("    movq    %%rax, %s\n", registers[i]);
+					}
+					#ifdef __APPLE__
+					emit("    callq   _%s\n", expr.function.c_str());
+					#else
+					emit("    callq   %s\n", expr.function.c_str());
+					#endif
+				} else {
+					for (int i = 0; i < 6; i++) {
+						compile_expression(expr.arguments[0], symbols);
+						expr.arguments.erase(expr.arguments.begin());
+						emit("    movq    %%rax, %s\n", registers[i]);
+					}
+					for (int i = expr.arguments.size() - 1; i >= 0; i--) {
+						compile_expression(expr.arguments[i], symbols);
+						emit("    pushq   %%rax\n");
+					}
+					#ifdef __APPLE__
+					emit("    callq   _%s\n", expr.function.c_str());
+					#else
+					emit("    callq   %s\n", expr.function.c_str());
+					#endif
+					emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 				}
-				for (int i = expr.arguments.size() - 1; i >= 0; i--) {
-					compile_expression(expr.arguments[i], symbols);
-					emit("    pushq   %%rax\n");
-				}
-				#ifdef __APPLE__
-				emit("    callq   _%s\n", expr.function.c_str());
-				#else
-				emit("    callq   %s\n", expr.function.c_str());
-				#endif
-				emit("    addq    $%ld, %%rsp\n", expr.arguments.size() * 8);
 			}
 		} else if (expression->type == et_binary) {
 			binary_expression_t expr = expression->binary;
