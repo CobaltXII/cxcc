@@ -35,13 +35,23 @@ struct symbol_t {
 struct symbol_table_t {
 	symbol_table_t* parent;
 	std::vector<symbol_t> symbols;
+
+	// Only used by semantic_analyzer.hpp.
+	bool in_loop = false;
+
+	// Only used by compiler.hpp.
 	long offset = 0;
+	long loop_break_to = 0;
+	long loop_continue_to = 0;
 
 	// Default constructor.
 	symbol_table_t(symbol_table_t* parent = nullptr) {
 		this->parent = parent;
 		if (parent) {
+			this->in_loop = parent->in_loop;
 			this->offset = parent->offset;
+			this->loop_break_to = parent->loop_break_to;
+			this->loop_continue_to = parent->loop_continue_to;
 		}
 	}
 

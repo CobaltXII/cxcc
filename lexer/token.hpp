@@ -16,6 +16,8 @@ enum token_type_t {
 	tk_else,
 	tk_while,
 	tk_return,
+	tk_break,
+	tk_continue,
 	// Punctuation.
 	tk_left_parenthesis,
 	tk_right_parenthesis,
@@ -58,6 +60,8 @@ std::string token_type_str[] = {
 	"'else'",
 	"'while'",
 	"'return'",
+	"'break'",
+	"'continue'",
 	// Punctuation.
 	"'('",
 	"')'",

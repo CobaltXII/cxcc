@@ -20,8 +20,6 @@
 >>			Right shift
 ?:			Ternary operator
 
-break		Break loop statement
-continue	Continue loop statement
 switch		Switch/case statement
 case		Switch/case statement
 default		Switch/case statement
@@ -29,3 +27,6 @@ do			Do/while loop statement
 else		If/else if/else statement
 for			For loop statement
 goto		Goto statement
+
+Nested functions
+Nested indexing

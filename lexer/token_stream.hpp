@@ -69,6 +69,10 @@ struct token_stream_t {
 			return {tk_while, str, TOKEN_DEBUG};
 		} else if (str == "return") {
 			return {tk_return, str, TOKEN_DEBUG};
+		} else if (str == "break") {
+			return {tk_break, str, TOKEN_DEBUG};
+		} else if (str == "continue") {
+			return {tk_continue, str, TOKEN_DEBUG};
 		} else {
 			return {tk_identifier, str, TOKEN_DEBUG};
 		}

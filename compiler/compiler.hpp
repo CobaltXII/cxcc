@@ -227,6 +227,8 @@ struct compiler_t {
 			emit("    cmpq    $0, %%rax\n");
 			emit("    je      L%ld\n", l1);
 			symbol_table_t new_symbols(&symbols);
+			new_symbols.loop_break_to = l1;
+			new_symbols.loop_continue_to = l0;
 			compile_statement(stmt.body, new_symbols);
 			emit("    jmp     L%ld\n", l0);
 			emit("L%ld:\n", l1);
@@ -246,6 +248,10 @@ struct compiler_t {
 		} else if (statement->type == st_expression) {
 			expression_statement_t stmt = statement->expression_stmt;
 			compile_expression(stmt.expression, symbols);
+		} else if (statement->type == st_break) {
+			emit("    jmp     L%ld\n", symbols.loop_break_to);
+		} else if (statement->type == st_continue) {
+			emit("    jmp     L%ld\n", symbols.loop_continue_to);
 		}
 	}
 

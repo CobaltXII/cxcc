@@ -469,6 +469,7 @@ struct semantic_analyzer_t {
 			}
 			// A while statement is invalid if it's body statement is invalid.
 			symbol_table_t new_symbols(&symbols);
+			new_symbols.in_loop = true;
 			if (!validate_statement(stmt.body, new_symbols)) {
 				return false;
 			}
@@ -523,6 +524,18 @@ struct semantic_analyzer_t {
 			// An expression statement is invalid if it's expression is
 			// invalid.
 			if (!validate_expression(stmt.expression, symbols)) {
+				return false;
+			}
+		} else if (statement->type == st_break ||
+				   statement->type == st_continue) {
+			// A break or continue statement is invalid if it is encountered
+			// outside of a loop.
+			if (!symbols.in_loop) {
+				if (statement->type == st_break) {
+					die("break statement not within loop", statement->lineno, statement->colno);
+				} else {
+					die("continue statement not within loop", statement->lineno, statement->colno);
+				}
 				return false;
 			}
 		}

@@ -315,6 +315,8 @@ struct parser_t {
 		return parse_assignment_term();
 	}
 
+	#define STATEMENT_DEBUG peek.lineno, peek.colno - peek.text.length() - 1
+
 	// Parse a statement.
 	statement_t* parse_statement() {
 		token_t peek = input.peek();
@@ -363,7 +365,15 @@ struct parser_t {
 		} else if (peek.type == tk_semicolon) {
 			// No-op statement.
 			expect(tk_semicolon);
-			return new statement_t();
+			return new statement_t(st_no_op, STATEMENT_DEBUG);
+		} else if (peek.type == tk_break) {
+			// Break statement.
+			expect(tk_break);
+			return new statement_t(st_break, STATEMENT_DEBUG);
+		} else if (peek.type == tk_continue) {
+			// Continue statement.
+			expect(tk_continue);
+			return new statement_t(st_continue, STATEMENT_DEBUG);
 		} else {
 			// Expression statement.
 			expression_t* expression = parse_expression();
@@ -371,6 +381,8 @@ struct parser_t {
 			return new statement_t((expression_statement_t){expression});
 		}
 	}
+
+	#undef STATEMENT_DEBUG
 
 	// Parse a list of statements.
 	std::vector<statement_t*> parse_statements() {

@@ -11,7 +11,9 @@ enum statement_type_t {
 	st_return,
 	st_variable_declaration,
 	st_no_op,
-	st_expression
+	st_expression,
+	st_break,
+	st_continue
 };
 
 // A compound statement.
@@ -59,6 +61,9 @@ struct statement_t {
 	variable_declaration_statement_t	variable_declaration_stmt;
 	expression_statement_t				expression_stmt;
 
+	long lineno;
+	long colno;
+
 	statement_t(compound_statement_t stmt) {
 		type = st_compound;
 		compound_stmt = stmt;
@@ -84,8 +89,10 @@ struct statement_t {
 		variable_declaration_stmt = stmt;
 	}
 
-	statement_t() {
-		type = st_no_op;
+	statement_t(statement_type_t type, long lineno, long colno) {
+		this->type = type;
+		this->lineno = lineno;
+		this->colno = colno;
 	}
 
 	statement_t(expression_statement_t stmt) {
