@@ -232,8 +232,9 @@ struct semantic_analyzer_t {
 		if (expression->type == et_character_literal) {
 			// Expand the character literal.
 			character_t expanded_literal = expand_literal(expression->character_literal, expression);
-			if (expanded_literal.size() != 1) {
+			if (expanded_literal.length() != 1) {
 				die("multi-character character literal", expression);
+				return false;
 			}
 			expression->character_literal = expanded_literal;
 		} else if (expression->type == et_string_literal) {
