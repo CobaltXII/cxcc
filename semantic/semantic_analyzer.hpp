@@ -296,12 +296,12 @@ struct semantic_analyzer_t {
 						return false;
 					}
 				}
-				// A function call expression is invalid if any of it's parameter
-				// expressions are invalid.
-				for (int i = 0; i < function_call.arguments.size(); i++) {
-					if (!validate_expression(function_call.arguments[i], symbols)) {
-						return false;
-					}
+			}
+			// A function call expression is invalid if any of it's parameter
+			// expressions are invalid.
+			for (int i = 0; i < function_call.arguments.size(); i++) {
+				if (!validate_expression(function_call.arguments[i], symbols)) {
+					return false;
 				}
 			}
 		} else if (expression->type == et_binary) {
