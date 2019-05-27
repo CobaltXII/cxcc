@@ -191,7 +191,7 @@ struct parser_t {
 				expect(tk_bi_modulo);
 				binary_operator = bi_modulo;
 			}
-			node = new expression_t((binary_expression_t){node, parse_multiplicative_term(), binary_operator}, EXPRESSION_DEBUG);
+			node = new expression_t((binary_expression_t){node, parse_literal(), binary_operator}, EXPRESSION_DEBUG);
 		}
 		return node;
 	}
