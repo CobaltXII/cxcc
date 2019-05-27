@@ -167,7 +167,8 @@ struct semantic_analyzer_t {
 			if (symbols.exists(function_call.function)) {
 				return expression->return_type = symbols.fetch(function_call.function).type;
 			} else {
-				die("unknown identifier '" + function_call.function + "'", expression);
+				// Assume that the return type is int, it shouldn't matter
+				// since all types are compatible.
 				return expression->return_type = {0};
 			}
 		} else if (expression->type == et_binary) {
