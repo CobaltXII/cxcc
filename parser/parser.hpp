@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "../lexer/complete_token_stream.hpp"
 
@@ -285,14 +286,26 @@ struct parser_t {
 
 	// Parse an assignment term.
 	expression_t* parse_assignment_term() {
-		// TODO: right associative
-		expression_t* node = parse_logical_or_term();
+		std::vector<expression_t*> nodes;
+		nodes.push_back(parse_logical_or_term());
 		while (input.peek().type == tk_bi_assignment) {
-			token_t peek = input.peek();
 			expect(tk_bi_assignment);
-			node = new expression_t((binary_expression_t){node, parse_logical_or_term(), bi_assignment}, EXPRESSION_DEBUG);
+			nodes.push_back(parse_logical_or_term());
 		}
-		return node;
+		if (nodes.size() == 1) {
+			return nodes[0];
+		} else {
+			std::reverse(nodes.begin(), nodes.end());
+			expression_t* node = new expression_t((binary_expression_t){nodes[1], nodes[0], bi_assignment}, nodes[1]->lineno, nodes[1]->colno);
+			nodes.erase(nodes.begin());
+			nodes.erase(nodes.begin());
+			while (nodes.size()) {
+				expression_t* next = nodes[0];
+				node = new expression_t((binary_expression_t){next, node, bi_assignment}, next->lineno, next->colno);
+				nodes.pop_back();
+			}
+			return node;
+		}
 	}
 
 	#undef EXPRESSION_DEBUG
