@@ -323,6 +323,9 @@ struct semantic_analyzer_t {
 					   binary.binary_operator == bi_multiplication_assignment ||
 					   binary.binary_operator == bi_division_assignment ||
 					   binary.binary_operator == bi_modulo_assignment ||
+					   binary.binary_operator == bi_binary_and ||
+					   binary.binary_operator == bi_binary_or ||
+					   binary.binary_operator == bi_binary_xor ||
 
 					   binary.binary_operator == bi_relational_equal ||
 					   binary.binary_operator == bi_relational_non_equal)
@@ -356,10 +359,15 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_modulo ||
 						binary.binary_operator == bi_multiplication_assignment ||
 						binary.binary_operator == bi_division_assignment ||
-						binary.binary_operator == bi_modulo_assignment) {
+						binary.binary_operator == bi_modulo_assignment ||
+						binary.binary_operator == bi_binary_and ||
+						binary.binary_operator == bi_binary_or ||
+						binary.binary_operator == bi_binary_xor)
+					{
 						// A binary expression of this type is invalid if the
 						// left-hand operand is a pointer and the operator is
-						// multiplication, division or modulo.
+						// multiplication, division, modulo or any bitwise
+						// operator.
 						die("invalid operands to binary expression ('" + prettyprint_type(left_type) + "' and '" + prettyprint_type(right_type) + "')", expression);
 						return false;
 					} else if (binary.binary_operator == bi_addition) {
@@ -377,10 +385,15 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_subtraction_assignment ||
 						binary.binary_operator == bi_multiplication_assignment ||
 						binary.binary_operator == bi_division_assignment ||
-						binary.binary_operator == bi_modulo_assignment) {
+						binary.binary_operator == bi_modulo_assignment ||
+						binary.binary_operator == bi_binary_and ||
+						binary.binary_operator == bi_binary_or ||
+						binary.binary_operator == bi_binary_xor)
+					{
 						// A binary expression of this type is invalid if the
 						// right-hand operand is a pointer and the operator is
-						// subtraction, multiplication, division or modulo.
+						// multiplication, division, modulo or any bitwise
+						// operator.
 						die("invalid operands to binary expression ('" + prettyprint_type(left_type) + "' and '" + prettyprint_type(right_type) + "')", expression);
 						return false;
 					}
