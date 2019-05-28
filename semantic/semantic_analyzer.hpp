@@ -439,7 +439,8 @@ struct semantic_analyzer_t {
 					return false;
 				}
 			} else if (unary.unary_operator == un_arithmetic_positive ||
-					   unary.unary_operator == un_arithmetic_negative)
+					   unary.unary_operator == un_arithmetic_negative ||
+					   unary.unary_operator == un_binary_not)
 			{
 				// A unary expression of this type is invalid if the operand
 				// is a pointer.
