@@ -335,7 +335,10 @@ struct parser_t {
 			   input.peek().type == tk_bi_subtraction_assignment ||
 			   input.peek().type == tk_bi_multiplication_assignment ||
 			   input.peek().type == tk_bi_division_assignment ||
-			   input.peek().type == tk_bi_modulo_assignment)
+			   input.peek().type == tk_bi_modulo_assignment ||
+			   input.peek().type == tk_bi_binary_and_assignment ||
+			   input.peek().type == tk_bi_binary_or_assignment ||
+			   input.peek().type == tk_bi_binary_xor_assignment)
 		{
 			token_t next = input.next();
 			if (next.type == tk_bi_assignment) {
@@ -350,6 +353,12 @@ struct parser_t {
 				operators.push_back(bi_division_assignment);
 			} else if (next.type == tk_bi_modulo_assignment) {
 				operators.push_back(bi_modulo_assignment);
+			} else if (next.type == tk_bi_binary_and_assignment) {
+				operators.push_back(bi_binary_and_assignment);
+			} else if (next.type == tk_bi_binary_or_assignment) {
+				operators.push_back(bi_binary_or_assignment);
+			} else if (next.type == tk_bi_binary_xor_assignment) {
+				operators.push_back(bi_binary_xor_assignment);
 			}
 			nodes.push_back(parse_logical_or_term());
 		}
