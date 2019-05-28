@@ -156,8 +156,8 @@ struct parser_t {
 		} else if (peek.type == tk_minus) {
 			expect(tk_minus);
 			return new expression_t({parse_literal(), un_arithmetic_negative}, EXPRESSION_DEBUG);
-		} else if (peek.type == tk_un_address_of) {
-			expect(tk_un_address_of);
+		} else if (peek.type == tk_ampersand) {
+			expect(tk_ampersand);
 			return new expression_t({parse_literal(), un_address_of}, EXPRESSION_DEBUG);
 		} else if (peek.type == tk_un_logical_not) {
 			expect(tk_un_logical_not);
@@ -270,13 +270,46 @@ struct parser_t {
 	#undef EXPRESSION_DEBUG
 	#define EXPRESSION_DEBUG peek.lineno, peek.colno
 
+	// Parse a binary AND term.
+	expression_t* parse_binary_and_term() {
+		expression_t* node = parse_equality_term();
+		while (input.peek().type == tk_ampersand) {
+			token_t peek = input.peek();
+			expect(tk_ampersand);
+			node = new expression_t((binary_expression_t){node, parse_equality_term(), bi_binary_and}, EXPRESSION_DEBUG);
+		}
+		return node;
+	}
+
+	// Parse a binary XOR term.
+	expression_t* parse_binary_xor_term() {
+		expression_t* node = parse_binary_and_term();
+		while (input.peek().type == tk_bi_binary_xor) {
+			token_t peek = input.peek();
+			expect(tk_bi_binary_xor);
+			node = new expression_t((binary_expression_t){node, parse_binary_and_term(), bi_binary_xor}, EXPRESSION_DEBUG);
+		}
+		return node;
+	}
+
+	// Parse a binary OR term.
+	expression_t* parse_binary_or_term() {
+		expression_t* node = parse_binary_xor_term();
+		while (input.peek().type == tk_bi_binary_or) {
+			token_t peek = input.peek();
+			expect(tk_bi_binary_or);
+			node = new expression_t((binary_expression_t){node, parse_binary_xor_term(), bi_binary_or}, EXPRESSION_DEBUG);
+		}
+		return node;
+	}
+
 	// Parse a logical AND term.
 	expression_t* parse_logical_and_term() {
-		expression_t* node = parse_equality_term();
+		expression_t* node = parse_binary_or_term();
 		while (input.peek().type == tk_bi_logical_and) {
 			token_t peek = input.peek();
 			expect(tk_bi_logical_and);
-			node = new expression_t((binary_expression_t){node, parse_equality_term(), bi_logical_and}, EXPRESSION_DEBUG);
+			node = new expression_t((binary_expression_t){node, parse_binary_or_term(), bi_logical_and}, EXPRESSION_DEBUG);
 		}
 		return node;
 	}
