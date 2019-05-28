@@ -181,6 +181,22 @@ struct compiler_t {
 				emit("    cmpq    %%rcx, %%rax\n");
 				emit("    setl    %%al\n");
 				emit("    movzbq  %%al, %%rax\n");
+			} else if (expr.binary_operator == bi_relational_greater_than_or_equal_to) {
+				compile_expression(expr.right_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.left_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    cmpq    %%rcx, %%rax\n");
+				emit("    setge   %%al\n");
+				emit("    movzbq  %%al, %%rax\n");
+			} else if (expr.binary_operator == bi_relational_lesser_than_or_equal_to) {
+				compile_expression(expr.right_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.left_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    cmpq    %%rcx, %%rax\n");
+				emit("    setle   %%al\n");
+				emit("    movzbq  %%al, %%rax\n");
 			}
 		} else if (expression->type == et_unary) {
 			unary_expression_t expr = expression->unary;
