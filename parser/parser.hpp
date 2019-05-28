@@ -222,7 +222,9 @@ struct parser_t {
 		expression_t* node = parse_additive_term();
 		token_t token;
 		while (input.peek().type == tk_bi_relational_greater_than ||
-			   input.peek().type == tk_bi_relational_lesser_than)
+			   input.peek().type == tk_bi_relational_lesser_than ||
+			   input.peek().type == tk_bi_relational_greater_than_or_equal_to ||
+			   input.peek().type == tk_bi_relational_lesser_than_or_equal_to)
 		{
 			token = input.peek();
 			binary_operator_t binary_operator = bi_error;
@@ -232,6 +234,12 @@ struct parser_t {
 			} else if (token.type == tk_bi_relational_lesser_than) {
 				expect(tk_bi_relational_lesser_than);
 				binary_operator = bi_relational_lesser_than;
+			} else if (token.type == tk_bi_relational_greater_than_or_equal_to) {
+				expect(tk_bi_relational_greater_than_or_equal_to);
+				binary_operator = bi_relational_greater_than_or_equal_to;
+			} else if (token.type == tk_bi_relational_lesser_than_or_equal_to) {
+				expect(tk_bi_relational_lesser_than_or_equal_to);
+				binary_operator = bi_relational_lesser_than_or_equal_to;
 			}
 			node = new expression_t((binary_expression_t){node, parse_additive_term(), binary_operator}, EXPRESSION_DEBUG);
 		}

@@ -20,6 +20,8 @@ enum binary_operator_t {
 	bi_relational_non_equal,
 	bi_relational_greater_than,
 	bi_relational_lesser_than,
+	bi_relational_greater_than_or_equal_to,
+	bi_relational_lesser_than_or_equal_to,
 	bi_error
 };
 
@@ -41,7 +43,9 @@ std::string binary_operator_str[] = {
 	"relational equal",
 	"relational non-equal",
 	"relational greater-than",
-	"relational lesser-than"
+	"relational lesser-than",
+	"relational greater-than or equal-to",
+	"relational lesser-than or equal-to"
 };
 
 // All unary operators.
