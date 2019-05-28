@@ -51,6 +51,7 @@ enum token_type_t {
 	tk_bi_binary_xor_assignment,
 	// Unary operators.
 	tk_un_logical_not,
+	tk_un_binary_not,
 	// Ambiguous operators.
 	tk_plus,
 	tk_minus,
@@ -107,6 +108,7 @@ std::string token_type_str[] = {
 	"'^='",
 	// Unary operators.
 	"'!'",
+	"'~'",
 	// Ambiguous operators.
 	"'+'",
 	"'-'",

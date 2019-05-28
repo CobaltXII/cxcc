@@ -378,6 +378,11 @@ struct token_stream_t {
 				return {tk_bi_relational_lesser_than, "<", TOKEN_DEBUG};
 			}
 		}
+		// Check for unary binary NOT.
+		else if (ch == '~') {
+			input.next();
+			return {tk_un_binary_not, "~", TOKEN_DEBUG};
+		}
 
 		// Encountered an unexpected character.
 		input.die("unexpected character");
