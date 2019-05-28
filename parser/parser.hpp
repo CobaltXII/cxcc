@@ -220,9 +220,30 @@ struct parser_t {
 		return node;
 	}
 
+	// Parse a binary shift term.
+	expression_t* parse_shift_term() {
+		expression_t* node = parse_additive_term();
+		token_t token;
+		while (input.peek().type == tk_bi_binary_left_shift ||
+			   input.peek().type == tk_bi_binary_right_shift)
+		{
+			token = input.peek();
+			binary_operator_t binary_operator = bi_error;
+			if (token.type == tk_bi_binary_left_shift) {
+				expect(tk_bi_binary_left_shift);
+				binary_operator = bi_binary_left_shift;
+			} else if (token.type == tk_bi_binary_right_shift) {
+				expect(tk_bi_binary_right_shift);
+				binary_operator = bi_binary_right_shift;
+			}
+			node = new expression_t((binary_expression_t){node, parse_additive_term(), binary_operator}, EXPRESSION_DEBUG);
+		}
+		return node;
+	}
+
 	// Parse a relational term.
 	expression_t* parse_relational_term() {
-		expression_t* node = parse_additive_term();
+		expression_t* node = parse_shift_term();
 		token_t token;
 		while (input.peek().type == tk_bi_relational_greater_than ||
 			   input.peek().type == tk_bi_relational_lesser_than ||
@@ -244,7 +265,7 @@ struct parser_t {
 				expect(tk_bi_relational_lesser_than_or_equal_to);
 				binary_operator = bi_relational_lesser_than_or_equal_to;
 			}
-			node = new expression_t((binary_expression_t){node, parse_additive_term(), binary_operator}, EXPRESSION_DEBUG);
+			node = new expression_t((binary_expression_t){node, parse_shift_term(), binary_operator}, EXPRESSION_DEBUG);
 		}
 		return node;
 	}
