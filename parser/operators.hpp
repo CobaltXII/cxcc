@@ -66,7 +66,8 @@ enum unary_operator_t {
 	un_arithmetic_positive,
 	un_arithmetic_negative,
 	un_address_of,
-	un_logical_not
+	un_logical_not,
+	un_binary_not
 };
 
 // All unary operators as strings.
@@ -75,5 +76,6 @@ std::string unary_operator_str[] = {
 	"arithmetic positive",
 	"arithmetic negative",
 	"address-of",
-	"logical not"
+	"logical NOT",
+	"binary NOT"
 };

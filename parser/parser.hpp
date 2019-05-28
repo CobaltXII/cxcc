@@ -162,6 +162,9 @@ struct parser_t {
 		} else if (peek.type == tk_un_logical_not) {
 			expect(tk_un_logical_not);
 			return new expression_t({parse_literal(), un_logical_not}, EXPRESSION_DEBUG);
+		} else if (peek.type == tk_un_binary_not) {
+			expect(tk_un_binary_not);
+			return new expression_t({parse_literal(), un_binary_not}, EXPRESSION_DEBUG);
 		} else {
 			die("expected literal");
 			return nullptr;
