@@ -9,8 +9,6 @@
 &			Binary AND
 |			Binary OR
 ^			Binary XOR
->=			Greater than or equal to
-<=			Lesser than or equal to
 <<			Left shift
 >>			Right shift
 ?:			Ternary operator
