@@ -318,6 +318,11 @@ struct semantic_analyzer_t {
 					   binary.binary_operator == bi_division ||
 					   binary.binary_operator == bi_modulo ||
 					   binary.binary_operator == bi_assignment ||
+					   binary.binary_operator == bi_addition_assignment ||
+					   binary.binary_operator == bi_subtraction_assignment ||
+					   binary.binary_operator == bi_multiplication_assignment ||
+					   binary.binary_operator == bi_division_assignment ||
+					   binary.binary_operator == bi_modulo_assignment ||
 
 					   binary.binary_operator == bi_relational_equal ||
 					   binary.binary_operator == bi_relational_non_equal)
@@ -331,7 +336,13 @@ struct semantic_analyzer_t {
 					die("invalid operands to binary expression ('" + prettyprint_type(left_type) + "' and '" + prettyprint_type(right_type) + "')", expression);
 					return false;
 				}
-				if (binary.binary_operator == bi_assignment) {
+				if (binary.binary_operator == bi_assignment ||
+				    binary.binary_operator == bi_addition_assignment ||
+				    binary.binary_operator == bi_subtraction_assignment ||
+				    binary.binary_operator == bi_multiplication_assignment ||
+				    binary.binary_operator == bi_division_assignment ||
+				    binary.binary_operator == bi_modulo_assignment)
+				{
 					// A binary expression of this type is invalid if the
 					// left-hand operand is an rvalue.
 					if (is_rvalue(binary.left_operand, symbols)) {
@@ -342,7 +353,10 @@ struct semantic_analyzer_t {
 				if (left_type.pointer_depth > 0) {
 					if (binary.binary_operator == bi_multiplication ||
 						binary.binary_operator == bi_division ||
-						binary.binary_operator == bi_modulo) {
+						binary.binary_operator == bi_modulo ||
+						binary.binary_operator == bi_multiplication_assignment ||
+						binary.binary_operator == bi_division_assignment ||
+						binary.binary_operator == bi_modulo_assignment) {
 						// A binary expression of this type is invalid if the
 						// left-hand operand is a pointer and the operator is
 						// multiplication, division or modulo.
@@ -359,7 +373,11 @@ struct semantic_analyzer_t {
 					if (binary.binary_operator == bi_subtraction ||
 						binary.binary_operator == bi_multiplication ||
 						binary.binary_operator == bi_division ||
-						binary.binary_operator == bi_modulo) {
+						binary.binary_operator == bi_modulo ||
+						binary.binary_operator == bi_subtraction_assignment ||
+						binary.binary_operator == bi_multiplication_assignment ||
+						binary.binary_operator == bi_division_assignment ||
+						binary.binary_operator == bi_modulo_assignment) {
 						// A binary expression of this type is invalid if the
 						// right-hand operand is a pointer and the operator is
 						// subtraction, multiplication, division or modulo.
@@ -609,6 +627,7 @@ struct semantic_analyzer_t {
 	// Expand an abstract syntax tree. This function does the following
 	// expansions:
 	//     - indexing expression expansion
+	//     - arithmetic assignment expression expansion
 	void expand_ast(program_t& program) {
 		for (int i = 0; i < program.size(); i++) {
 			expand_ast(program[i]);
@@ -660,13 +679,11 @@ struct semantic_analyzer_t {
 							index,
 							bi_addition
 						},
-						expression->lineno,
-						expression->colno
+						0, 0
 					),
 					un_value_of
 				},
-				expression->lineno,
-				expression->colno
+				0, 0
 			);
 		} else if (expression->type == et_function_call) {
 			function_call_expression_t expr = expression->function_call;
@@ -676,6 +693,17 @@ struct semantic_analyzer_t {
 		} else if (expression->type == et_binary) {
 			expand_ast(expression->binary.left_operand);
 			expand_ast(expression->binary.right_operand);
+			if (expression->binary.binary_operator == bi_addition_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_addition}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_subtraction_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_subtraction}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_multiplication_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_multiplication}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_division_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_division}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_modulo_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_modulo}, 0, 0), bi_assignment}, 0, 0);
+			}
 		} else if (expression->type == et_unary) {
 			expand_ast(expression->unary.operand);
 		}
