@@ -284,25 +284,48 @@ struct parser_t {
 		return node;
 	}
 
-	// Parse an assignment term.
+	// Parse an assignment term (right-associative).
 	expression_t* parse_assignment_term() {
 		std::vector<expression_t*> nodes;
+		std::vector<binary_operator_t> operators;
 		nodes.push_back(parse_logical_or_term());
-		while (input.peek().type == tk_bi_assignment) {
-			expect(tk_bi_assignment);
+		while (input.peek().type == tk_bi_assignment ||
+			   input.peek().type == tk_bi_addition_assignment ||
+			   input.peek().type == tk_bi_subtraction_assignment ||
+			   input.peek().type == tk_bi_multiplication_assignment ||
+			   input.peek().type == tk_bi_division_assignment ||
+			   input.peek().type == tk_bi_modulo_assignment)
+		{
+			token_t next = input.next();
+			if (next.type == tk_bi_assignment) {
+				operators.push_back(bi_assignment);
+			} else if (next.type == tk_bi_addition_assignment) {
+				operators.push_back(bi_addition_assignment);
+			} else if (next.type == tk_bi_subtraction_assignment) {
+				operators.push_back(bi_subtraction_assignment);
+			} else if (next.type == tk_bi_multiplication_assignment) {
+				operators.push_back(bi_multiplication_assignment);
+			} else if (next.type == tk_bi_division_assignment) {
+				operators.push_back(bi_division_assignment);
+			} else if (next.type == tk_bi_modulo_assignment) {
+				operators.push_back(bi_modulo_assignment);
+			}
 			nodes.push_back(parse_logical_or_term());
 		}
 		if (nodes.size() == 1) {
 			return nodes[0];
 		} else {
 			std::reverse(nodes.begin(), nodes.end());
-			expression_t* node = new expression_t((binary_expression_t){nodes[1], nodes[0], bi_assignment}, nodes[1]->lineno, nodes[1]->colno);
+			std::reverse(operators.begin(), operators.end());
+			expression_t* node = new expression_t((binary_expression_t){nodes[1], nodes[0], operators[0]}, nodes[1]->lineno, nodes[1]->colno);
 			nodes.erase(nodes.begin());
 			nodes.erase(nodes.begin());
+			operators.erase(operators.begin());
 			while (nodes.size()) {
 				expression_t* next = nodes[0];
-				node = new expression_t((binary_expression_t){next, node, bi_assignment}, next->lineno, next->colno);
+				node = new expression_t((binary_expression_t){next, node, operators[0]}, next->lineno, next->colno);
 				nodes.pop_back();
+				operators.pop_back();
 			}
 			return node;
 		}
