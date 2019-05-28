@@ -259,8 +259,8 @@ struct token_stream_t {
 				return {tk_asterisk, "*", TOKEN_DEBUG};
 			}
 		}
-		// Check for the ambiguous ampersand (&) operator and binary logical
-		// AND.
+		// Check for the ambiguous ampersand (&) operator, binary logical AND
+		// and binary binary AND assignment.
 		else if (ch == '&') {
 			input.next();
 			if (input.eof()) {
@@ -268,6 +268,9 @@ struct token_stream_t {
 			} else if (input.peek() == '&') {
 				input.next();
 				return {tk_bi_logical_and, "&&", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_binary_and_assignment, "&=", TOKEN_DEBUG};
 			} else {
 				return {tk_ampersand, "&", TOKEN_DEBUG};
 			}
@@ -309,7 +312,8 @@ struct token_stream_t {
 				return {tk_bi_assignment, "=", TOKEN_DEBUG};
 			}
 		}
-		// Check for binary binary OR and binary logical OR.
+		// Check for binary binary OR, binary logical OR and binary binary OR
+		// assignment.
 		else if (ch == '|') {
 			input.next();
 			if (input.eof()) {
@@ -317,14 +321,24 @@ struct token_stream_t {
 			} else if (input.peek() == '|') {
 				input.next();
 				return {tk_bi_logical_or, "||", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_binary_or_assignment, "|=", TOKEN_DEBUG};
 			} else {
 				return {tk_bi_binary_or, "|", TOKEN_DEBUG};
 			}
 		}
-		// Check for binary binary XOR.
+		// Check for binary binary XOR and binary binary XOR assignment.
 		else if (ch == '^') {
 			input.next();
-			return {tk_bi_binary_xor, "^", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_bi_binary_xor, "^", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_binary_xor_assignment, "^=", TOKEN_DEBUG};
+			} else {
+				return {tk_bi_binary_xor, "^", TOKEN_DEBUG};
+			}
 		}
 		// Check for binary relational non-equal and unary logical NOT.
 		else if (ch == '!') {

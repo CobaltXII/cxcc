@@ -46,6 +46,9 @@ enum token_type_t {
 	tk_bi_relational_lesser_than_or_equal_to,
 	tk_bi_binary_or,
 	tk_bi_binary_xor,
+	tk_bi_binary_and_assignment,
+	tk_bi_binary_or_assignment,
+	tk_bi_binary_xor_assignment,
 	// Unary operators.
 	tk_un_logical_not,
 	// Ambiguous operators.
@@ -99,6 +102,9 @@ std::string token_type_str[] = {
 	"'<='",
 	"'|'",
 	"'^'",
+	"'&='",
+	"'|='",
+	"'^='",
 	// Unary operators.
 	"'!'",
 	// Ambiguous operators.
