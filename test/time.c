@@ -1,7 +1,7 @@
 int puts(int* str) {
 	while (*str) {
 		putchar(*str);
-		str = str + 1;
+		str += 1;
 	}
 	return 0;
 }
@@ -18,7 +18,6 @@ int puti(int n) {
 }
 
 int main() {
-	putchar('\n');
 	int seconds = time(0);
 	int minutes = seconds / 60;
 	int hours = minutes / 60;
