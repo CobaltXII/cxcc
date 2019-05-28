@@ -44,13 +44,15 @@ enum token_type_t {
 	tk_bi_relational_lesser_than,
 	tk_bi_relational_greater_than_or_equal_to,
 	tk_bi_relational_lesser_than_or_equal_to,
+	tk_bi_binary_or,
+	tk_bi_binary_xor,
 	// Unary operators.
-	tk_un_address_of,
 	tk_un_logical_not,
 	// Ambiguous operators.
 	tk_plus,
 	tk_minus,
-	tk_asterisk
+	tk_asterisk,
+	tk_ampersand
 };
 
 // All token types as strings.
@@ -95,13 +97,15 @@ std::string token_type_str[] = {
 	"'<'",
 	"'>='",
 	"'<='",
+	"'|'",
+	"'^'",
 	// Unary operators.
-	"'&'",
 	"'!'",
 	// Ambiguous operators.
 	"'+'",
 	"'-'",
-	"'*'"
+	"'*'",
+	"'&'"
 };
 
 // All token types as strings, padded.
