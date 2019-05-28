@@ -352,8 +352,8 @@ struct token_stream_t {
 				return {tk_un_logical_not, "!", TOKEN_DEBUG};
 			}
 		}
-		// Check for binary relational greater-than and binary relational
-		// greater-than or equal-to.
+		// Check for binary relational greater-than, binary relational
+		// greater-than or equal-to and binary binary left-shift.
 		else if (ch == '>') {
 			input.next();
 			if (input.eof()) {
@@ -361,12 +361,15 @@ struct token_stream_t {
 			} else if (input.peek() == '=') {
 				input.next();
 				return {tk_bi_relational_greater_than_or_equal_to, ">=", TOKEN_DEBUG};
+			} else if (input.peek() == '>') {
+				input.next();
+				return {tk_bi_binary_right_shift, ">>", TOKEN_DEBUG};
 			} else {
 				return {tk_bi_relational_greater_than, ">", TOKEN_DEBUG};
 			}
 		}
-		// Check for binary relational lesser-than and binary relational
-		// lesser-than or equal-to.
+		// Check for binary relational lesser-than binary relational
+		// lesser-than or equal-to and binary binary right-shift.
 		else if (ch == '<') {
 			input.next();
 			if (input.eof()) {
@@ -374,6 +377,9 @@ struct token_stream_t {
 			} else if (input.peek() == '=') {
 				input.next();
 				return {tk_bi_relational_lesser_than_or_equal_to, "<=", TOKEN_DEBUG};
+			} else if (input.peek() == '<') {
+				input.next();
+				return {tk_bi_binary_left_shift, "<<", TOKEN_DEBUG};
 			} else {
 				return {tk_bi_relational_lesser_than, "<", TOKEN_DEBUG};
 			}
