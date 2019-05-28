@@ -215,6 +215,18 @@ struct compiler_t {
 				compile_expression(expr.right_operand, symbols);
 				emit("    popq    %%rcx\n");
 				emit("    xorq    %%rcx, %%rax\n");
+			} else if (expr.binary_operator == bi_binary_left_shift) {
+				compile_expression(expr.right_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.left_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    salq    %%cl, %%rax\n");
+			} else if (expr.binary_operator == bi_binary_right_shift) {
+				compile_expression(expr.right_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.left_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    sarq    %%cl, %%rax\n");
 			}
 		} else if (expression->type == et_unary) {
 			unary_expression_t expr = expression->unary;

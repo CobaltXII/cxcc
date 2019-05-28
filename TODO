@@ -2,8 +2,6 @@
 >>=			Right shift assignment
 ++			Post- and pre-increment
 --			Post- and pre-decrement
-<<			Left shift
->>			Right shift
 ?:			Ternary operator
 
 switch		Switch/case statement
