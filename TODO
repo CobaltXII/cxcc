@@ -1,6 +1,5 @@
 <<=			Left shift assignment
 >>=			Right shift assignment
-~			Binary NOT
 ++			Post- and pre-increment
 --			Post- and pre-decrement
 <<			Left shift

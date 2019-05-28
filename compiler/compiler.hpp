@@ -231,6 +231,9 @@ struct compiler_t {
 				emit("    cmpq    $0, %%rax\n");
 				emit("    movq    $0, %%rax\n");
 				emit("    sete    %%al\n");
+			} else if (expr.unary_operator == un_binary_not) {
+				compile_expression(expr.operand, symbols);
+				emit("    notq    %%rax\n");
 			}
 		}
 	}
