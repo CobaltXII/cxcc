@@ -1,8 +1,5 @@
 <<=			Left shift assignment
 >>=			Right shift assignment
-&=			Binary AND assignment
-|=			Binary OR assignment
-^=			Binary XOR assignment
 ~			Binary NOT
 ++			Post- and pre-increment
 --			Post- and pre-decrement
