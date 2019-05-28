@@ -197,6 +197,24 @@ struct compiler_t {
 				emit("    cmpq    %%rcx, %%rax\n");
 				emit("    setle   %%al\n");
 				emit("    movzbq  %%al, %%rax\n");
+			} else if (expr.binary_operator == bi_binary_and) {
+				compile_expression(expr.left_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.right_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    andq    %%rcx, %%rax\n");
+			} else if (expr.binary_operator == bi_binary_or) {
+				compile_expression(expr.left_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.right_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    orq    %%rcx, %%rax\n");
+			} else if (expr.binary_operator == bi_binary_xor) {
+				compile_expression(expr.left_operand, symbols);
+				emit("    pushq   %%rax\n");
+				compile_expression(expr.right_operand, symbols);
+				emit("    popq    %%rcx\n");
+				emit("    xorq    %%rcx, %%rax\n");
 			}
 		} else if (expression->type == et_unary) {
 			unary_expression_t expr = expression->unary;

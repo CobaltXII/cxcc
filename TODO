@@ -6,9 +6,6 @@
 ~			Binary NOT
 ++			Post- and pre-increment
 --			Post- and pre-decrement
-&			Binary AND
-|			Binary OR
-^			Binary XOR
 <<			Left shift
 >>			Right shift
 ?:			Ternary operator
