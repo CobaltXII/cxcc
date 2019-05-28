@@ -326,6 +326,9 @@ struct semantic_analyzer_t {
 					   binary.binary_operator == bi_binary_and ||
 					   binary.binary_operator == bi_binary_or ||
 					   binary.binary_operator == bi_binary_xor ||
+					   binary.binary_operator == bi_binary_and_assignment ||
+					   binary.binary_operator == bi_binary_or_assignment ||
+					   binary.binary_operator == bi_binary_xor_assignment ||
 
 					   binary.binary_operator == bi_relational_equal ||
 					   binary.binary_operator == bi_relational_non_equal)
@@ -362,7 +365,10 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_modulo_assignment ||
 						binary.binary_operator == bi_binary_and ||
 						binary.binary_operator == bi_binary_or ||
-						binary.binary_operator == bi_binary_xor)
+						binary.binary_operator == bi_binary_xor ||
+						binary.binary_operator == bi_binary_and_assignment ||
+						binary.binary_operator == bi_binary_or_assignment ||
+						binary.binary_operator == bi_binary_xor_assignment)
 					{
 						// A binary expression of this type is invalid if the
 						// left-hand operand is a pointer and the operator is
@@ -378,17 +384,18 @@ struct semantic_analyzer_t {
 						}
 					}
 				} else if (right_type.pointer_depth > 0) {
-					if (binary.binary_operator == bi_subtraction ||
-						binary.binary_operator == bi_multiplication ||
+					if (binary.binary_operator == bi_multiplication ||
 						binary.binary_operator == bi_division ||
 						binary.binary_operator == bi_modulo ||
-						binary.binary_operator == bi_subtraction_assignment ||
 						binary.binary_operator == bi_multiplication_assignment ||
 						binary.binary_operator == bi_division_assignment ||
 						binary.binary_operator == bi_modulo_assignment ||
 						binary.binary_operator == bi_binary_and ||
 						binary.binary_operator == bi_binary_or ||
-						binary.binary_operator == bi_binary_xor)
+						binary.binary_operator == bi_binary_xor ||
+						binary.binary_operator == bi_binary_and_assignment ||
+						binary.binary_operator == bi_binary_or_assignment ||
+						binary.binary_operator == bi_binary_xor_assignment)
 					{
 						// A binary expression of this type is invalid if the
 						// right-hand operand is a pointer and the operator is
@@ -718,6 +725,12 @@ struct semantic_analyzer_t {
 				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_division}, 0, 0), bi_assignment}, 0, 0);
 			} else if (expression->binary.binary_operator == bi_modulo_assignment) {
 				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_modulo}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_binary_and_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_and}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_binary_or_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_or}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_binary_xor_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_xor}, 0, 0), bi_assignment}, 0, 0);
 			}
 		} else if (expression->type == et_unary) {
 			expand_ast(expression->unary.operand);
