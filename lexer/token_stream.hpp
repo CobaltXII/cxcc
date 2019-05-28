@@ -335,15 +335,31 @@ struct token_stream_t {
 				return {tk_un_logical_not, "!", TOKEN_DEBUG};
 			}
 		}
-		// Check for binary relational greater-than.
+		// Check for binary relational greater-than and binary relational
+		// greater-than or equal-to.
 		else if (ch == '>') {
 			input.next();
-			return {tk_bi_relational_greater_than, ">", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_bi_relational_greater_than, ">", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_relational_greater_than_or_equal_to, ">=", TOKEN_DEBUG};
+			} else {
+				return {tk_bi_relational_greater_than, ">", TOKEN_DEBUG};
+			}
 		}
-		// Check for binary relational lesser-than.
+		// Check for binary relational lesser-than and binary relational
+		// lesser-than or equal-to.
 		else if (ch == '<') {
 			input.next();
-			return {tk_bi_relational_lesser_than, "<", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_bi_relational_lesser_than, "<", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_relational_lesser_than_or_equal_to, "<=", TOKEN_DEBUG};
+			} else {
+				return {tk_bi_relational_lesser_than, "<", TOKEN_DEBUG};
+			}
 		}
 
 		// Encountered an unexpected character.
