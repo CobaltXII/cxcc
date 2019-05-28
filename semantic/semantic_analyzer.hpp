@@ -329,6 +329,8 @@ struct semantic_analyzer_t {
 					   binary.binary_operator == bi_binary_and_assignment ||
 					   binary.binary_operator == bi_binary_or_assignment ||
 					   binary.binary_operator == bi_binary_xor_assignment ||
+					   binary.binary_operator == bi_binary_left_shift ||
+					   binary.binary_operator == bi_binary_right_shift ||
 
 					   binary.binary_operator == bi_relational_equal ||
 					   binary.binary_operator == bi_relational_non_equal)
@@ -368,7 +370,9 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_binary_xor ||
 						binary.binary_operator == bi_binary_and_assignment ||
 						binary.binary_operator == bi_binary_or_assignment ||
-						binary.binary_operator == bi_binary_xor_assignment)
+						binary.binary_operator == bi_binary_xor_assignment ||
+						binary.binary_operator == bi_binary_left_shift ||
+						binary.binary_operator == bi_binary_right_shift)
 					{
 						// A binary expression of this type is invalid if the
 						// left-hand operand is a pointer and the operator is
@@ -395,7 +399,9 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_binary_xor ||
 						binary.binary_operator == bi_binary_and_assignment ||
 						binary.binary_operator == bi_binary_or_assignment ||
-						binary.binary_operator == bi_binary_xor_assignment)
+						binary.binary_operator == bi_binary_xor_assignment ||
+						binary.binary_operator == bi_binary_left_shift ||
+						binary.binary_operator == bi_binary_right_shift)
 					{
 						// A binary expression of this type is invalid if the
 						// right-hand operand is a pointer and the operator is
