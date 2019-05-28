@@ -220,31 +220,69 @@ struct token_stream_t {
 			return {tk_semicolon, ";", TOKEN_DEBUG};
 		}
 
-		// Check for the ambiguous plus (+) operator.
+		// Check for the ambiguous plus (+) operator and binary addition
+		// assignment.
 		else if (ch == '+') {
 			input.next();
-			return {tk_plus, "+", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_plus, "+", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_addition_assignment, "+=", TOKEN_DEBUG};
+			} else {
+				return {tk_plus, "+", TOKEN_DEBUG};
+			}
 		}
-		// Check for the ambiguous minus (-) operator.
+		// Check for the ambiguous minus (-) operator and binary subtraction
+		// assignment.
 		else if (ch == '-') {
 			input.next();
-			return {tk_minus, "-", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_minus, "-", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_subtraction_assignment, "-=", TOKEN_DEBUG};
+			} else {
+				return {tk_minus, "-", TOKEN_DEBUG};
+			}
 		}
-		// Check for the ambiguous asterisk (*) operator.
+		// Check for the ambiguous asterisk (*) operator and binary
+		// multiplication assignment.
 		else if (ch == '*') {
 			input.next();
-			return {tk_asterisk, "*", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_asterisk, "*", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_multiplication_assignment, "*=", TOKEN_DEBUG};
+			} else {
+				return {tk_asterisk, "*", TOKEN_DEBUG};
+			}
 		}
 
-		// Check for binary division.
+		// Check for binary division and binary division assignment.
 		else if (ch == '/') {
 			input.next();
-			return {tk_bi_division, "/", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_bi_division, "/", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_division_assignment, "/=", TOKEN_DEBUG};
+			} else {
+				return {tk_bi_division, "/", TOKEN_DEBUG};
+			}
 		}
-		// Check for binary modulo.
+		// Check for binary modulo and binary modulo assignment.
 		else if (ch == '%') {
 			input.next();
-			return {tk_bi_modulo, "%", TOKEN_DEBUG};
+			if (input.eof()) {
+				return {tk_bi_modulo, "%", TOKEN_DEBUG};
+			} else if (input.peek() == '=') {
+				input.next();
+				return {tk_bi_modulo_assignment, "%=", TOKEN_DEBUG};
+			} else {
+				return {tk_bi_modulo, "%", TOKEN_DEBUG};
+			}
 		}
 		// Check for binary assignment and relational equals.
 		else if (ch == '=') {
