@@ -390,6 +390,8 @@ struct semantic_analyzer_t {
 				// bi_logical_or
 				// bi_relational_greater_than
 				// bi_relational_lesser_than
+				// bi_relational_greater_than_or_equal_to
+				// bi_relational_lesser_than_or_equal_to
 				//
 				// A binary expression of this type is invalid if the return
 				// type of either operand cannot be converted to int.
