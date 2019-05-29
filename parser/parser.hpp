@@ -348,7 +348,9 @@ struct parser_t {
 			   input.peek().type == tk_bi_modulo_assignment ||
 			   input.peek().type == tk_bi_binary_and_assignment ||
 			   input.peek().type == tk_bi_binary_or_assignment ||
-			   input.peek().type == tk_bi_binary_xor_assignment)
+			   input.peek().type == tk_bi_binary_xor_assignment ||
+			   input.peek().type == tk_bi_binary_left_shift_assignment ||
+			   input.peek().type == tk_bi_binary_right_shift_assignment)
 		{
 			token_t next = input.next();
 			if (next.type == tk_bi_assignment) {
@@ -369,6 +371,10 @@ struct parser_t {
 				operators.push_back(bi_binary_or_assignment);
 			} else if (next.type == tk_bi_binary_xor_assignment) {
 				operators.push_back(bi_binary_xor_assignment);
+			} else if (next.type == tk_bi_binary_left_shift_assignment) {
+				operators.push_back(bi_binary_left_shift_assignment);
+			} else if (next.type == tk_bi_binary_right_shift_assignment) {
+				operators.push_back(bi_binary_right_shift_assignment);
 			}
 			nodes.push_back(parse_logical_or_term());
 		}

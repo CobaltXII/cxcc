@@ -30,6 +30,8 @@ enum binary_operator_t {
 	bi_binary_xor_assignment,
 	bi_binary_left_shift,
 	bi_binary_right_shift,
+	bi_binary_left_shift_assignment,
+	bi_binary_right_shift_assignment,
 	bi_error
 };
 
@@ -61,7 +63,9 @@ std::string binary_operator_str[] = {
 	"binary OR assignment",
 	"binary XOR assignment"
 	"binary left-shift",
-	"binary right-shift"
+	"binary right-shift",
+	"binary left-shift assignment",
+	"binary right-shift assignment"
 };
 
 // All unary operators.
