@@ -1,5 +1,3 @@
-<<=			Left shift assignment
->>=			Right shift assignment
 ++			Post- and pre-increment
 --			Post- and pre-decrement
 ?:			Ternary operator
