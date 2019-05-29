@@ -328,6 +328,7 @@ struct compiler_t {
 				function.parameters[i].identifier,
 				i * -8 - 8
 			));
+			new_symbols.offset -= 8;
 		}
 		if (function.parameters.size() > 6) {
 			for (int i = 6; i < function.parameters.size(); i++) {
