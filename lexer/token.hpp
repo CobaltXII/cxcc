@@ -51,6 +51,8 @@ enum token_type_t {
 	tk_bi_binary_xor_assignment,
 	tk_bi_binary_left_shift,
 	tk_bi_binary_right_shift,
+	tk_bi_binary_left_shift_assignment,
+	tk_bi_binary_right_shift_assignment,
 	// Unary operators.
 	tk_un_logical_not,
 	tk_un_binary_not,
@@ -110,6 +112,8 @@ std::string token_type_str[] = {
 	"'^='",
 	"'<<'",
 	"'>>'",
+	"'<<='",
+	"'>>='",
 	// Unary operators.
 	"'!'",
 	"'~'",
