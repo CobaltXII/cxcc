@@ -186,14 +186,16 @@ struct semantic_analyzer_t {
 				type_t right_type = expression_type(binary.right_operand, symbols);
 				return expression->return_type = {std::max(left_type.pointer_depth, right_type.pointer_depth)};
 			} else if (binary.binary_operator == bi_assignment ||
-					   bi_addition_assignment ||
-					   bi_subtraction_assignment ||
-					   bi_multiplication_assignment ||
-					   bi_division_assignment ||
-					   bi_modulo_assignment ||
-					   bi_binary_and_assignment ||
-					   bi_binary_or_assignment ||
-					   bi_binary_xor_assignment)
+					   binary.binary_operator == bi_addition_assignment ||
+					   binary.binary_operator == bi_subtraction_assignment ||
+					   binary.binary_operator == bi_multiplication_assignment ||
+					   binary.binary_operator == bi_division_assignment ||
+					   binary.binary_operator == bi_modulo_assignment ||
+					   binary.binary_operator == bi_binary_and_assignment ||
+					   binary.binary_operator == bi_binary_or_assignment ||
+					   binary.binary_operator == bi_binary_xor_assignment ||
+					   binary.binary_operator == bi_binary_left_shift_assignment ||
+					   binary.binary_operator == bi_binary_right_shift_assignment)
 			{
 				// The return type of this type of binary expression is
 				// equivalent to the return type of the left-hand operand.
@@ -352,6 +354,8 @@ struct semantic_analyzer_t {
 					   binary.binary_operator == bi_binary_xor_assignment ||
 					   binary.binary_operator == bi_binary_left_shift ||
 					   binary.binary_operator == bi_binary_right_shift ||
+					   binary.binary_operator == bi_binary_left_shift_assignment ||
+					   binary.binary_operator == bi_binary_right_shift_assignment ||
 
 					   binary.binary_operator == bi_relational_equal ||
 					   binary.binary_operator == bi_relational_non_equal)
@@ -370,7 +374,12 @@ struct semantic_analyzer_t {
 				    binary.binary_operator == bi_subtraction_assignment ||
 				    binary.binary_operator == bi_multiplication_assignment ||
 				    binary.binary_operator == bi_division_assignment ||
-				    binary.binary_operator == bi_modulo_assignment)
+				    binary.binary_operator == bi_modulo_assignment ||
+				    binary.binary_operator == bi_binary_and_assignment ||
+					binary.binary_operator == bi_binary_or_assignment ||
+					binary.binary_operator == bi_binary_xor_assignment ||
+					binary.binary_operator == bi_binary_left_shift_assignment ||
+					binary.binary_operator == bi_binary_right_shift_assignment)
 				{
 					// A binary expression of this type is invalid if the
 					// left-hand operand is an rvalue.
@@ -393,7 +402,9 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_binary_or_assignment ||
 						binary.binary_operator == bi_binary_xor_assignment ||
 						binary.binary_operator == bi_binary_left_shift ||
-						binary.binary_operator == bi_binary_right_shift)
+						binary.binary_operator == bi_binary_right_shift ||
+						binary.binary_operator == bi_binary_left_shift_assignment ||
+						binary.binary_operator == bi_binary_right_shift_assignment)
 					{
 						// A binary expression of this type is invalid if the
 						// left-hand operand is a pointer and the operator is
@@ -422,7 +433,9 @@ struct semantic_analyzer_t {
 						binary.binary_operator == bi_binary_or_assignment ||
 						binary.binary_operator == bi_binary_xor_assignment ||
 						binary.binary_operator == bi_binary_left_shift ||
-						binary.binary_operator == bi_binary_right_shift)
+						binary.binary_operator == bi_binary_right_shift ||
+						binary.binary_operator == bi_binary_left_shift_assignment ||
+						binary.binary_operator == bi_binary_right_shift_assignment)
 					{
 						// A binary expression of this type is invalid if the
 						// right-hand operand is a pointer and the operator is
@@ -760,6 +773,10 @@ struct semantic_analyzer_t {
 				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_or}, 0, 0), bi_assignment}, 0, 0);
 			} else if (expression->binary.binary_operator == bi_binary_xor_assignment) {
 				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_xor}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_binary_left_shift_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_left_shift}, 0, 0), bi_assignment}, 0, 0);
+			} else if (expression->binary.binary_operator == bi_binary_right_shift_assignment) {
+				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_right_shift}, 0, 0), bi_assignment}, 0, 0);
 			}
 			expression->return_type = expression->binary.left_operand->return_type;
 		} else if (expression->type == et_unary) {
