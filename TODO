@@ -10,6 +10,3 @@ default		Switch/case statement
 do			Do/while loop statement
 else		If/else if/else statement
 for			For loop statement
-goto		Goto statement
-
-Nested functions
