@@ -185,7 +185,16 @@ struct semantic_analyzer_t {
 				type_t left_type = expression_type(binary.left_operand, symbols);
 				type_t right_type = expression_type(binary.right_operand, symbols);
 				return expression->return_type = {std::max(left_type.pointer_depth, right_type.pointer_depth)};
-			} else if (binary.binary_operator == bi_assignment) {
+			} else if (binary.binary_operator == bi_assignment ||
+					   bi_addition_assignment ||
+					   bi_subtraction_assignment ||
+					   bi_multiplication_assignment ||
+					   bi_division_assignment ||
+					   bi_modulo_assignment ||
+					   bi_binary_and_assignment ||
+					   bi_binary_or_assignment ||
+					   bi_binary_xor_assignment)
+			{
 				// The return type of this type of binary expression is
 				// equivalent to the return type of the left-hand operand.
 				return expression->return_type = expression_type(binary.left_operand, symbols);
@@ -196,6 +205,16 @@ struct semantic_analyzer_t {
 				// bi_relational_non_equal,
 				// bi_relational_greater_than,
 				// bi_relational_lesser_than,
+				// bi_relational_greater_than_or_equal_to,
+	            // bi_relational_lesser_than_or_equal_to,
+	            // bi_binary_and,
+				// bi_binary_or,
+				// bi_binary_xor,
+				// bi_binary_and_assignment,
+				// bi_binary_or_assignment,
+				// bi_binary_xor_assignment,
+				// bi_binary_left_shift,
+				// bi_binary_right_shift
 				//
 				// The return type of these types of binary expressions is
 				// int.
@@ -221,6 +240,7 @@ struct semantic_analyzer_t {
 				return expression->return_type = {operand_type.pointer_depth + 1};
 			} else {
 				// un_logical_not
+				// un_binary_not
 				//
 				// The return type of this type of unary expression is int.
 				return expression->return_type = {0};
@@ -230,6 +250,7 @@ struct semantic_analyzer_t {
 
 	// Validate an expression.
 	bool validate_expression(expression_t* expression, symbol_table_t symbols) {
+		expression_type(expression, symbols);
 		if (expression->type == et_character_literal) {
 			// Expand the character literal.
 			character_t expanded_literal = expand_literal(expression->character_literal, expression);
@@ -669,7 +690,7 @@ struct semantic_analyzer_t {
 	}
 	void expand_ast(statement_t*& statement) {
 		if (statement->type == st_compound) {
-			compound_statement_t stmt = statement->compound_stmt;
+			compound_statement_t& stmt = statement->compound_stmt;
 			for (int i = 0; i < stmt.statements.size(); i++) {
 				expand_ast(stmt.statements[i]);
 			}
@@ -682,7 +703,7 @@ struct semantic_analyzer_t {
 		} else if (statement->type == st_return) {
 			expand_ast(statement->return_stmt.value);
 		} else if (statement->type == st_variable_declaration) {
-			variable_declaration_statement_t stmt = statement->variable_declaration_stmt;
+			variable_declaration_statement_t& stmt = statement->variable_declaration_stmt;
 			if (stmt.initializer) {
 				expand_ast(stmt.initializer);
 			}
@@ -714,8 +735,9 @@ struct semantic_analyzer_t {
 				},
 				0, 0
 			);
+			expression->return_type = {array->return_type.pointer_depth - 1};
 		} else if (expression->type == et_function_call) {
-			function_call_expression_t expr = expression->function_call;
+			function_call_expression_t& expr = expression->function_call;
 			for (int i = 0; i < expr.arguments.size(); i++) {
 				expand_ast(expr.arguments[i]);
 			}
@@ -739,6 +761,7 @@ struct semantic_analyzer_t {
 			} else if (expression->binary.binary_operator == bi_binary_xor_assignment) {
 				expression = new expression_t((binary_expression_t){expression->binary.left_operand, new expression_t((binary_expression_t){expression->binary.left_operand, expression->binary.right_operand, bi_binary_xor}, 0, 0), bi_assignment}, 0, 0);
 			}
+			expression->return_type = expression->binary.left_operand->return_type;
 		} else if (expression->type == et_unary) {
 			expand_ast(expression->unary.operand);
 		}
