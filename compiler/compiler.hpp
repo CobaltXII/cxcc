@@ -1,14 +1,25 @@
 #pragma once
+#include <cstdio>
+#include <cstdarg>
+#include <fstream>
 
 // A compiler.
 struct compiler_t {
+	std::FILE* outfile;
+
 	// Default constructor.
-	compiler_t(program_t program) {
+	compiler_t(program_t program, std::FILE* outfile) {
 		this->program = program;
+		this->outfile = outfile;
 	}
 
 	// Emit a line of assembly.
-	#define emit printf
+	void emit(const char* fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		std::vfprintf(outfile, fmt, args);
+		va_end(args);
+	}
 
 	// Compile an expression.
 	void compile_expression(expression_t* expression, symbol_table_t& symbols) {
