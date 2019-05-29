@@ -34,7 +34,10 @@ struct compiler_t {
 				if (expr.arguments.size() <= 6) {
 					for (int i = 0; i < expr.arguments.size(); i++) {
 						compile_expression(expr.arguments[i], symbols);
-						emit("    movq    %%rax, %s\n", registers[i]);
+						emit("    pushq   %%rax\n");
+					}
+					for (int i = 0; i < expr.arguments.size(); i++) {
+						emit("    popq    %s\n", registers[expr.arguments.size() - 1 - i]);
 					}
 					#ifdef __APPLE__
 					emit("    callq   _%s\n", expr.function.c_str());
@@ -44,8 +47,11 @@ struct compiler_t {
 				} else {
 					for (int i = 0; i < 6; i++) {
 						compile_expression(expr.arguments[0], symbols);
+						emit("    pushq   %%rax\n");
+					}
+					for (int i = 0; i < 6; i++) {
+						emit("    popq    %s\n", registers[5 - i]);
 						expr.arguments.erase(expr.arguments.begin());
-						emit("    movq    %%rax, %s\n", registers[i]);
 					}
 					for (int i = expr.arguments.size() - 1; i >= 0; i--) {
 						compile_expression(expr.arguments[i], symbols);
