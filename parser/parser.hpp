@@ -79,40 +79,19 @@ struct parser_t {
 		return parameters;
 	}
 
-	// Parse a literal.
-	expression_t* parse_literal() {
+	// Parse a literal without a suffix (either an indexing suffix or a
+	// post-increment/decrement suffix).
+	expression_t* parse_literal_no_suffix() {
 		token_t peek = input.peek();
 		int lineno = peek.lineno;
 		int colno = peek.colno;
 		#define EXPRESSION_DEBUG lineno, colno - peek.text.length() - 1
 		if (peek.type == tk_lit_integer) {
-			expression_t* out = new expression_t(expect(tk_lit_integer).text, "int", EXPRESSION_DEBUG);
-			peek = input.peek();
-			if (peek.type == tk_left_bracket) {
-				expect(tk_left_bracket);
-				expression_t* index = parse_expression();
-				expect(tk_right_bracket);
-				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
-			}
-			return out;
+			return new expression_t(expect(tk_lit_integer).text, "int", EXPRESSION_DEBUG);
 		} else if (peek.type == tk_lit_string) {
-			expression_t* out = new expression_t(expect(tk_lit_string).text, "str", EXPRESSION_DEBUG - 2);
-			if (peek.type == tk_left_bracket) {
-				expect(tk_left_bracket);
-				expression_t* index = parse_expression();
-				expect(tk_right_bracket);
-				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
-			}
-			return out;
+			return new expression_t(expect(tk_lit_string).text, "str", EXPRESSION_DEBUG - 2);
 		} else if (peek.type == tk_lit_character) {
-			expression_t* out = new expression_t(expect(tk_lit_character).text, "chr", EXPRESSION_DEBUG - 2);
-			if (peek.type == tk_left_bracket) {
-				expect(tk_left_bracket);
-				expression_t* index = parse_expression();
-				expect(tk_right_bracket);
-				return new expression_t((indexing_expression_t){out, index}, EXPRESSION_DEBUG);
-			}
-			return out;
+			return new expression_t(expect(tk_lit_character).text, "chr", EXPRESSION_DEBUG - 2);
 		} else if (peek.type == tk_identifier) {
 			identifier_t identifier = parse_identifier();
 			peek = input.peek();
@@ -127,11 +106,6 @@ struct parser_t {
 				}
 				expect(tk_right_parenthesis);
 				return new expression_t({identifier, parameters}, EXPRESSION_DEBUG);
-			} else if (peek.type == tk_left_bracket) {
-				expect(tk_left_bracket);
-				expression_t* index = parse_expression();
-				expect(tk_right_bracket);
-				return new expression_t((indexing_expression_t){new expression_t(identifier, "id", EXPRESSION_DEBUG), index}, EXPRESSION_DEBUG);
 			} else {
 				return new expression_t(identifier, "id", EXPRESSION_DEBUG);
 			}
@@ -139,13 +113,6 @@ struct parser_t {
 			expect(tk_left_parenthesis);
 			expression_t* subexpression = parse_expression();
 			expect(tk_right_parenthesis);
-			peek = input.peek();
-			if (peek.type == tk_left_bracket) {
-				expect(tk_left_bracket);
-				expression_t* index = parse_expression();
-				expect(tk_right_bracket);
-				return new expression_t((indexing_expression_t){subexpression, index}, EXPRESSION_DEBUG);
-			}
 			return subexpression;
 		} else if (peek.type == tk_asterisk) {
 			expect(tk_asterisk);
@@ -165,11 +132,30 @@ struct parser_t {
 		} else if (peek.type == tk_un_binary_not) {
 			expect(tk_un_binary_not);
 			return new expression_t({parse_literal(), un_binary_not}, EXPRESSION_DEBUG);
+		} else if (peek.type == tk_int) {
+			expect(tk_int);
+			while (input.peek().type == tk_asterisk) {
+				expect(tk_asterisk);
+			}
+			return new expression_t("0", "int", EXPRESSION_DEBUG);
 		} else {
 			die("expected literal");
 			return nullptr;
 		}
 		#undef EXPRESSION_DEBUG
+	}
+
+	// Parse a literal.
+	expression_t* parse_literal() {
+		expression_t* node = parse_literal_no_suffix();
+		token_t peek;
+		while ((peek = input.peek()).type == tk_left_bracket) {
+			expect(tk_left_bracket);
+			expression_t* index = parse_expression();
+			expect(tk_right_bracket);
+			node = new expression_t((indexing_expression_t){node, index}, peek.lineno, peek.colno - peek.text.length() - 1);
+		}
+		return node;
 	}
 
 	#define EXPRESSION_DEBUG token.lineno, token.colno
