@@ -23,6 +23,11 @@ Binary operators:
 	- multiplication
 	- division
 	- modulo
+	- addition assignment
+	- subtraction assignment
+	- multiplication assignment
+	- division assignment
+	- modulo assignment
 	- assignment
 	- logical AND
 	- logical OR
@@ -30,6 +35,18 @@ Binary operators:
 	- non-equivalence
 	- relational greater-than
 	- relational lesser-than
+	- relational greater-than or equal-to
+	- relational lesser-than or equal-to
+	- binary AND
+	- binary OR
+	- binary XOR
+	- binary AND assignment
+	- binary OR assignment
+	- binary XOR assignment
+	- binary left-shift
+	- binary right-shift
+	- binary left-shift assignment
+	- binary right-shift assignment
 Unary operators:
 	- address-of
 	- value-of
