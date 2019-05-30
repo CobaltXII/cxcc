@@ -1,3 +1,4 @@
+#include <ctime>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -46,8 +47,10 @@ int main(int argc, char** argv) {
 
 	// Parse the second argument.
 	std::string outfile;
-	if (argc == 3 || argc == 4) {
+	if (argc == 3) {
 		outfile = argv[2];
+	} else if (argc == 4) {
+		outfile = "tmp" + std::to_string(time(NULL)) + ".s";
 	} else {
 		outfile = std::string(argv[1]) + ".s";
 	}
@@ -69,9 +72,14 @@ int main(int argc, char** argv) {
 
 	// Optionally assembly the output using gcc.
 	if (argc == 4) {
+		// Assemble the output.
 		std::stringstream gcc_cmd;
-		gcc_cmd << "gcc " << outfile << " -o " << outfile;
+		gcc_cmd << "gcc " << outfile << " -o " << argv[2];
 		system(gcc_cmd.str().c_str());
+		// Remove the temporary file.
+		std::stringstream rm_cmd;
+		rm_cmd << "rm -f " << outfile;
+		system(rm_cmd.str().c_str());
 	}
 
 	// Exit successfully.
